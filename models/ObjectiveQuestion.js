@@ -1,47 +1,48 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "ObjectiveQuestions",
+    "ObjectiveQuestion",
     {
-      ObjectiveQuestionId: {
+      objectiveQuestionId: {
         type: dataTypes.STRING(20),
         primary: true,
       },
-      Question: {
+      question: {
         type: dataTypes.STRING(255),
       },
-      Level: {
+      level: {
         type: dataTypes.INTEGER(2),
       },
-      Chioce1: {
+      chioce1: {
         type: dataTypes.STRING(255),
       },
-      Chioce2: {
+      chioce2: {
         type: dataTypes.STRING(255),
       },
-      Chioce3: {
+      chioce3: {
         type: dataTypes.STRING(255),
       },
-      Chioce4: {
+      chioce4: {
         type: dataTypes.STRING(255),
       },
-      Chioce5: {
+      chioce5: {
         type: dataTypes.STRING(255),
       },
-      Chioce6: {
+      chioce6: {
         type: dataTypes.STRING(255),
       },
-      Chioce7: {
+      chioce7: {
         type: dataTypes.STRING(255),
       },
-      Chioce8: {
+      chioce8: {
         type: dataTypes.STRING(255),
       },
-      Chioce9: {
+      chioce9: {
         type: dataTypes.STRING(255),
       },
-      Chioce10: {
+      chioce10: {
         type: dataTypes.STRING(255),
       },
+    },
     },
     {
       tableName: "objective_questions",
