@@ -7,8 +7,12 @@ const express = require("express");
 const morgan = require("morgan");
 const app = express();
 
+const studentRoutes = require("./routes/Student");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/student", studentRoutes);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan());
