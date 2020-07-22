@@ -48,5 +48,15 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
+  model.associate = (models) => {
+    model.hasMany(models.QuestionsExam, {
+      foriegnKey: "objectiveQuestionId",
+    });
+
+    model.hasMany(models.ObjectiveAnswers, {
+      foriegnKey: "objectiveQuestionId",
+    });
+  };
+
   return model;
 };
