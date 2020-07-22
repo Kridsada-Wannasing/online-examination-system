@@ -1,8 +1,8 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "QuestionsExam",
+    "QuestionExam",
     {
-      QuestionsexamId: {
+      questionExamId: {
         type: dataTypes.STRING(20),
       },
     },
