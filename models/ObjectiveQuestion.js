@@ -43,7 +43,6 @@ module.exports = (sequelize, dataTypes) => {
         type: dataTypes.STRING(255),
       },
     },
-    },
     {
       tableName: "objective_questions",
     }
