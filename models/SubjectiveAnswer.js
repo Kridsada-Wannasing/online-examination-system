@@ -21,5 +21,9 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
+  model.belongsTo(models.SubjectiveQuestion, {
+    foriegnKey: "subjectiveQuestionId",
+  });
+
   return model;
 };
