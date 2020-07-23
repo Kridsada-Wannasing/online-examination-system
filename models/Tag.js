@@ -15,5 +15,11 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
+  model.associate = (model) => {
+    model.hasMany(model.QuestionTag, {
+      foreignKey: "tagId",
+    });
+  };
+
   return model;
 };
