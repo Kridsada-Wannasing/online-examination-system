@@ -12,5 +12,14 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
+  model.associate = (models) => {
+    model.belongsTo(models.ObjectiveQuestion, {
+      foreignKey: "objectiveQuestionId",
+    });
+    model.belongsTo(models.SubjectiveQuestion, {
+      foreignKey: "subjectiveQuestionId",
+    });
+  };
+
   return model;
 };
