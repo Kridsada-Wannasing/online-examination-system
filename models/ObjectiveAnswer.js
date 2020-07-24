@@ -1,6 +1,6 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "ObjectiveAnswers",
+    "ObjectiveAnswer",
     {
       objectiveAnswerId: {
         type: dataTypes.STRING(20),
