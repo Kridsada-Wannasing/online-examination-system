@@ -23,7 +23,7 @@ module.exports = (sequelize, dataTypes) => {
 
   model.associate = (models) => {
     model.belongsTo(models.SubjectiveQuestion, {
-      foriegnKey: "subjectiveQuestionId",
+      foreignKey: "subjectiveQuestionId",
     });
   };
 
