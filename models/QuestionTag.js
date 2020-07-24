@@ -1,8 +1,8 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "QuestionsTag",
+    "QuestionTag",
     {
-      questionsTagId: {
+      questionTagId: {
         type: dataTypes.STRING(4),
         primaryKey: true,
       },
