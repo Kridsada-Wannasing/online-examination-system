@@ -15,11 +15,11 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Exam, {
       foriegnKey: "examId",
     });
-    model.belongsTo(models.ObjectiveQuestions, {
-      foriegnKey: "ObjectiveQuestionId",
+    model.belongsTo(models.ObjectiveQuestion, {
+      foriegnKey: "objectiveQuestionId",
     });
-    model.belongsTo(models.SubjectiveQuestions, {
-      foriegnKey: "SubjectiveQuestionId",
+    model.belongsTo(models.SubjectiveQuestion, {
+      foriegnKey: "subjectiveQuestionId",
     });
   };
 
