@@ -1,6 +1,6 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "ObjectiveAnswers",
+    "ObjectiveAnswer",
     {
       objectiveAnswerId: {
         type: dataTypes.STRING(20),
@@ -27,9 +27,11 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
-  model.belongsTo(models.ObjectiveQuestions, {
-    foriegnKey: "objectiveQuestionId",
-  });
+  model.associate = (models) => {
+    model.belongsTo(models.ObjectiveQuestion, {
+      foreignKey: "objectiveQuestionId",
+    });
+  };
 
   return model;
 };
