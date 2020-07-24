@@ -15,8 +15,8 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
-  model.associate = (model) => {
-    model.hasMany(model.QuestionTag, {
+  model.associate = (models) => {
+    model.hasMany(models.QuestionTag, {
       foreignKey: "tagId",
     });
   };
