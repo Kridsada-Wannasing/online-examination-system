@@ -4,7 +4,7 @@ module.exports = (sequelize, dataTypes) => {
     {
       subjectiveAnswerId: {
         type: dataTypes.STRING(20),
-        primary: true,
+        primaryKey: true,
       },
       keyword1: {
         type: dataTypes.STRING(255),
