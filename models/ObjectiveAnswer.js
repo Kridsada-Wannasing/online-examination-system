@@ -4,7 +4,7 @@ module.exports = (sequelize, dataTypes) => {
     {
       objectiveAnswerId: {
         type: dataTypes.STRING(20),
-        primary: true,
+        primaryKey: true,
       },
       chioce1: {
         type: dataTypes.STRING(255),
