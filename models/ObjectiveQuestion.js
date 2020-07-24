@@ -49,11 +49,11 @@ module.exports = (sequelize, dataTypes) => {
   );
 
   model.associate = (models) => {
-    model.hasMany(models.QuestionsExam, {
+    model.hasMany(models.QuestionExam, {
       foriegnKey: "objectiveQuestionId",
     });
 
-    model.hasMany(models.ObjectiveAnswers, {
+    model.hasMany(models.ObjectiveAnswer, {
       foriegnKey: "objectiveQuestionId",
     });
   };
