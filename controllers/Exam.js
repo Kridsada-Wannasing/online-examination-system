@@ -10,6 +10,15 @@ const createExam = async (req, res, next) => {
   });
 };
 
+const deleteExam = async (req, res, next) => {
+  await db.Exam.destroy({
+    where: { examId: req.params.examId },
+  });
+
+  res.status(204).send();
+};
+
 module.exports = {
   createExam,
+  deleteExam,
 };
