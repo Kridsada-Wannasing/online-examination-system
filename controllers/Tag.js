@@ -45,8 +45,17 @@ const getTag = async (req, res, next) => {
   });
 };
 
+const deleteTag = async (req, res, next) => {
+  await db.Tag.destroy({
+    where: { tagId: req.params.tagId },
+  });
+
+  res.status(204).send();
+};
+
 module.exports = {
   createTag,
   getAllTag,
   getTag,
+  deleteTag,
 };
