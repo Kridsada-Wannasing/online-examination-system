@@ -11,6 +11,15 @@ const createQuestion = async (req, res, next) => {
   });
 };
 
+const deleteQuestion = async (req, res, next) => {
+  await db.ObjectiveQuestion.destroy({
+    where: { objectiveQuestionId: req.params.questionId },
+  });
+
+  res.status(204).send();
+};
+
 module.exports = {
   createQuestion,
+  deleteQuestion,
 };
