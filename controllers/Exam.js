@@ -33,7 +33,8 @@ const getExam = async (req, res, next) => {
     status: "success",
     allExam,
   });
-  
+};
+
 const updateExam = async (req, res, next) => {
   await db.Exam.update(req.body, {
     where: { examId: req.params.examId },
@@ -51,7 +52,7 @@ const updateExam = async (req, res, next) => {
         message: err,
       });
     });
-}
+};
 
 const deleteExam = async (req, res, next) => {
   await db.Exam.destroy({
@@ -67,4 +68,4 @@ module.exports = {
   getExam,
   updateExam,
   deleteExam,
-}
+};
