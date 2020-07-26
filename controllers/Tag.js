@@ -45,8 +45,20 @@ const getTag = async (req, res, next) => {
   });
 };
 
+const updateTag = async (req, res, next) => {
+  await db.Tag.update(req.body, {
+    where: { tagId: req.params.tagId },
+  });
+
+  res.status(200).json({
+    status: "succes",
+    message: "เปลี่ยนแปลงป้ายระบุนี้สำเร็จ",
+  });
+};
+
 module.exports = {
   createTag,
   getAllTag,
   getTag,
+  updateTag,
 };
