@@ -7,5 +7,6 @@ router.post("/create-exam", examController.createExam);
 router.get("/all", examController.getAllExam);
 router.get(":examId", examController.getExam);
 router.patch("/edit-exam/:examId", examController.updateExam);
+router.delete("/delete-exam/:examId", examController.deleteExam);
 
 module.exports = router;
