@@ -10,5 +10,9 @@ router.patch(
   "/update-question/:questionId",
   objectiveQuestionController.updateQuestion
 );
+router.delete(
+  "/delete-question/:questionId",
+  objectiveQuestionController.deleteQuestion
+);
 
 module.exports = router;
