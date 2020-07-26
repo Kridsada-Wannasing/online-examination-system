@@ -18,6 +18,35 @@ const createTag = async (req, res, next) => {
   });
 };
 
+const getAllTag = async (req, res, next) => {
+  const allTag = await db.Tag.findAll();
+
+  res.status(200).json({
+    status: "success",
+    allTag,
+  });
+};
+
+const getTag = async (req, res, next) => {
+  const target = await db.Tag.findOne({
+    where: { tagId: req.params.tagId },
+  });
+
+  if (!target) {
+    res.status(404).json({
+      status: "fail",
+      message: "ไม่มีชุดข้อสอบนี้",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    target,
+  });
+};
+
 module.exports = {
   createTag,
+  getAllTag,
+  getTag,
 };
