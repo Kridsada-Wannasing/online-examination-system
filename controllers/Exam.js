@@ -20,10 +20,12 @@ const getAllExam = async (req, res, next) => {
 };
 
 const getExam = async (req, res, next) => {
-  const target = await db.Exam.findOne({ where: { examId: req.body.examId } });
+  const target = await db.Exam.findOne({
+    where: { examId: req.params.examId },
+  });
 
-  if (target) {
-    res.status(400).json({
+  if (!target) {
+    res.status(404).json({
       status: "fail",
       message: "ไม่มีชุดข้อสอบนี้",
     });
@@ -31,7 +33,7 @@ const getExam = async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    allExam,
+    target,
   });
 };
 
