@@ -10,6 +10,15 @@ const createSubject = async (req, res, next) => {
   });
 };
 
+const deleteSubject = async (req, res, next) => {
+  await db.Subject.destroy({
+    where: { subjectId: req.params.subjectId },
+  });
+
+  res.status(204).send();
+};
+
 module.exports = {
   createSubject,
+  deleteSubject,
 };
