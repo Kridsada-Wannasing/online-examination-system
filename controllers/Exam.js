@@ -33,10 +33,29 @@ const getExam = async (req, res, next) => {
     status: "success",
     allExam,
   });
-};
+  
+const updateExam = async (req, res, next) => {
+  await db.Exam.update(req.body, {
+    where: { examId: req.params.examId },
+  })
+    .then((updatedExam) =>
+      res.status(200).json({
+        status: "succes",
+        message: "เปลี่ยนแปลงข้อมูลชุดข้อสอบนี้สำเร็จ",
+        updatedExam,
+      })
+    )
+    .catch((err) => {
+      res.status(200).json({
+        status: "fail",
+        message: err,
+      });
+    });
+}
 
 module.exports = {
   createExam,
   getAllExam,
   getExam,
-};
+  updateExam
+}
