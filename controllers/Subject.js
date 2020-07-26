@@ -10,6 +10,18 @@ const createSubject = async (req, res, next) => {
   });
 };
 
+const updateSubject = async (req, res, next) => {
+  await db.Subject.update(req.body, {
+    where: { subjectId: req.params.subjectId },
+  });
+
+  res.status(200).json({
+    status: "succes",
+    message: "เปลี่ยนแปลงข้อมูลรายวิชานี้สำเร็จ",
+  });
+};
+
 module.exports = {
   createSubject,
+  updateSubject,
 };
