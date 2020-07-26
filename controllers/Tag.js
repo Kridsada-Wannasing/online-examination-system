@@ -35,7 +35,7 @@ const getTag = async (req, res, next) => {
   if (!target) {
     res.status(404).json({
       status: "fail",
-      message: "ไม่มีชุดข้อสอบนี้",
+      message: "ไม่มีป้ายระบุนี้",
     });
   }
 
