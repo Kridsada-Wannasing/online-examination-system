@@ -50,11 +50,11 @@ module.exports = (sequelize, dataTypes) => {
 
   model.associate = (models) => {
     model.hasMany(models.QuestionExam, {
-      foriegnKey: "objectiveQuestionId",
+      foreignKey: "objectiveQuestionId",
     });
 
     model.hasMany(models.ObjectiveAnswer, {
-      foriegnKey: "objectiveQuestionId",
+      foreignKey: "objectiveQuestionId",
     });
   };
 
