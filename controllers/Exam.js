@@ -11,7 +11,7 @@ const createExam = async (req, res, next) => {
 };
 
 const getAllExam = async (req, res, next) => {
-  const allExam = await db.Exam.findAll();
+  const allExam = await db.Exam.findAll({ include: [db.QuestionExam] });
 
   res.status(200).json({
     status: "success",
