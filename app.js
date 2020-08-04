@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan());
 }
 
-app.use("meeting", meetingRoute);
+app.use("/meeting", meetingRoute);
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
