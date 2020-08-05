@@ -4,6 +4,7 @@ const router = express.Router();
 const examController = require("../controllers/Exam");
 
 router.post("/", examController.createExam);
+router.post("/:examId", examController.addQuestionInExam);
 router.get("/", examController.getAllExam);
 router.get("/:examId", examController.getExam);
 router.patch("/:examId", examController.updateExam);
