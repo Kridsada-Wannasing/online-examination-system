@@ -10,6 +10,37 @@ const createExam = async (req, res, next) => {
   });
 };
 
+const addQuestionInExam = async (req, res, next) => {
+  //ถ้าเป็นปรนัย
+  if (req.body.questionType === "Objective") {
+    const question = await db.ObjectiveQuestion.create(req.body);
+    await db.QuestionExam.create({
+      objectiveQuestionId: question.objectiveQuestionId,
+      examId: req.params.examId,
+    });
+  }
+  //ถ้าเป็นอัตนัย
+  else if (req.body.questionType === "Subjective") {
+    const question = await db.SubjectiveQuestion.create(req.body);
+    await db.QuestionExam.create({
+      subjectiveQuestionId: question.subjectiveQuestionId,
+      examId: req.params.examId,
+    });
+  }
+  //ถ้าไม่ตรงเงื่อนไขใดๆเลย
+  else {
+    res.status(400).json({
+      status: "fail",
+      message: "สร้างคำถามไม่สำเร็จ",
+    });
+  }
+
+  res.status(201).json({
+    status: "success",
+    message: "สร้างคำถามเรียบร้อย",
+  });
+};
+
 const getAllExam = async (req, res, next) => {
   const allExam = await db.Exam.findAll({ include: [db.QuestionExam] });
 
@@ -59,6 +90,7 @@ const deleteExam = async (req, res, next) => {
 
 module.exports = {
   createExam,
+  addQuestionInExam,
   getAllExam,
   getExam,
   updateExam,
