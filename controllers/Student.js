@@ -31,6 +31,11 @@ const login = async (req, res, next) => {
   }
 };
 
+const getMe = (req, res, next) => {
+  res.status(200).json(req.user);
+};
+
 module.exports = {
   login,
+  getMe,
 };
