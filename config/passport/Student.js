@@ -16,4 +16,4 @@ const JWTStrategy = new Strategy(option, async (payload, done) => {
   else doNotTrack(null, false);
 });
 
-passport.use("jwt", JWTStrategy);
+passport.use("student-jwt", JWTStrategy);
