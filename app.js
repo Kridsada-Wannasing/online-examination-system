@@ -10,6 +10,7 @@ const studentRoutes = require("./routes/Student");
 const teacherRoute = require("./routes/Teacher");
 
 require("./config/passport/Student");
+require("./config/passport/Teacher");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
