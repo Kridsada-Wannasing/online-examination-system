@@ -4,7 +4,7 @@ const passport = require("passport");
 
 const studentController = require("../controllers/Student");
 
-const auth = passport.authenticate("jwt", { session: false });
+const auth = passport.authenticate("student-jwt", { session: false });
 
 router.post("/login", studentController.login);
 
