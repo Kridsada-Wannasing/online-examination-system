@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const app = express();
 
 require("./config/passport/Student");
+require("./config/passport/Teacher");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
