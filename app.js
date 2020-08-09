@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const app = express();
 const studentRoutes = require("./routes/Student");
 const teacherRoute = require("./routes/Teacher");
+const examRoute = require("./routes/Exam");
 
 require("./config/passport/Student");
 require("./config/passport/Teacher");
@@ -15,13 +16,13 @@ require("./config/passport/Teacher");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/student", studentRoutes);
-
 if (process.env.NODE_ENV === "development") {
   app.use(morgan());
 }
 
+app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoute);
+app.use("/exam", examRoute);
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
