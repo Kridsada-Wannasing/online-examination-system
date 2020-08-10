@@ -1,7 +1,10 @@
 const db = require("../models");
 
 const createMeeting = async (req, res, next) => {
-  const newMeeting = await db.Meeting.create(req.body);
+  const newMeeting = await db.Meeting.create({
+    ...req.body,
+    teacherId: req.user,
+  });
 
   res.status(201).json({
     status: "success",
