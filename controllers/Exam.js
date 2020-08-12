@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize");
 
 const createExamInSubject = async (req, res, next) => {
   const newExam = await db.Exam.create({
@@ -57,7 +58,12 @@ const addQuestionInExam = async (req, res, next) => {
 };
 
 const getAllExam = async (req, res, next) => {
-  const allExam = await db.Exam.findAll({ include: [db.QuestionExam] });
+  const allExam = await db.Exam.findAll({
+    //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
+    where: {
+      [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
+    },
+  });
 
   res.status(200).json({
     status: "success",
@@ -68,6 +74,20 @@ const getAllExam = async (req, res, next) => {
 const getExam = async (req, res, next) => {
   const target = await db.Exam.findOne({
     where: { examId: req.params.examId },
+    include: {
+      model: db.QuestionExam,
+      include: [
+        {
+          model: db.ObjectiveQuestion,
+          required: false,
+        },
+        {
+          model: db.SubjectiveQuestion,
+          required: false,
+        },
+      ],
+      required: false,
+    },
   });
 
   if (!target) {
