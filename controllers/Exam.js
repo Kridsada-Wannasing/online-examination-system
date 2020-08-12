@@ -1,7 +1,12 @@
 const db = require("../models");
+const { Op } = require("sequelize");
 
-const createExam = async (req, res, next) => {
-  const newExam = await db.Exam.create(req.body);
+const createExamInSubject = async (req, res, next) => {
+  const newExam = await db.Exam.create({
+    subjectId: req.params.subjectId,
+    teacherId: req.teacher.teacherId,
+    ...req.body,
+  });
 
   res.status(201).json({
     status: "success",
@@ -11,21 +16,32 @@ const createExam = async (req, res, next) => {
 };
 
 const addQuestionInExam = async (req, res, next) => {
+  const { questionType, tagId } = req.body;
+  delete req.body.questionType;
+  delete req.body.tagId;
+
+  const mapOfTagId = tagId.map((id) => ({
+    tagId: id,
+    questionType: questionType,
+  }));
+
   //ถ้าเป็นปรนัย
-  if (req.body.questionType === "Objective") {
-    const question = await db.ObjectiveQuestion.create(req.body);
+  if (questionType === "Objective") {
+    await db.ObjectiveQuestion.create(req.body);
     await db.QuestionExam.create({
-      objectiveQuestionId: question.objectiveQuestionId,
+      questionType: questionType,
       examId: req.params.examId,
     });
+    await db.QuestionTag.bulkCreate(mapOfTagId);
   }
   //ถ้าเป็นอัตนัย
-  else if (req.body.questionType === "Subjective") {
-    const question = await db.SubjectiveQuestion.create(req.body);
+  else if (questionType === "Subjective") {
+    await db.SubjectiveQuestion.create(req.body);
     await db.QuestionExam.create({
-      subjectiveQuestionId: question.subjectiveQuestionId,
+      questionType: questionType,
       examId: req.params.examId,
     });
+    await db.QuestionTag.bulkCreate(mapOfTagId);
   }
   //ถ้าไม่ตรงเงื่อนไขใดๆเลย
   else {
@@ -42,7 +58,12 @@ const addQuestionInExam = async (req, res, next) => {
 };
 
 const getAllExam = async (req, res, next) => {
-  const allExam = await db.Exam.findAll({ include: [db.QuestionExam] });
+  const allExam = await db.Exam.findAll({
+    //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
+    where: {
+      [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
+    },
+  });
 
   res.status(200).json({
     status: "success",
@@ -53,6 +74,20 @@ const getAllExam = async (req, res, next) => {
 const getExam = async (req, res, next) => {
   const target = await db.Exam.findOne({
     where: { examId: req.params.examId },
+    include: {
+      model: db.QuestionExam,
+      include: [
+        {
+          model: db.ObjectiveQuestion,
+          required: false,
+        },
+        {
+          model: db.SubjectiveQuestion,
+          required: false,
+        },
+      ],
+      required: false,
+    },
   });
 
   if (!target) {
@@ -80,6 +115,28 @@ const updateExam = async (req, res, next) => {
   });
 };
 
+const editQuesitonInExam = async (req, res, next) => {
+  //ถ้าเป็นปรนัย
+  if (req.body.questionType === "Objective") {
+    await db.ObjectiveQuestion.update(req.body, {
+      where: { questionId: req.params.questionId },
+    });
+  }
+  //ถ้าเป็นอัตนัย
+  else if (req.body.questionType === "Subjective") {
+    await db.SubjectiveQuestion.update(req.body, {
+      where: { questionId: req.params.questionId },
+    });
+  }
+  //ถ้าไม่ตรงเงื่อนไขใดๆเลย
+  else {
+    res.status(400).json({
+      status: "fail",
+      message: "แก้ไขคำถามไม่สำเร็จ",
+    });
+  }
+};
+
 const deleteExam = async (req, res, next) => {
   await db.Exam.destroy({
     where: { examId: req.params.examId },
@@ -89,10 +146,11 @@ const deleteExam = async (req, res, next) => {
 };
 
 module.exports = {
-  createExam,
+  createExamInSubject,
   addQuestionInExam,
   getAllExam,
   getExam,
   updateExam,
+  editQuesitonInExam,
   deleteExam,
 };
