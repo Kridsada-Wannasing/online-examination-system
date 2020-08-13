@@ -3,8 +3,10 @@ module.exports = (sequelize, dataTypes) => {
     "Teacher",
     {
       teacherId: {
-        type: dataTypes.INTEGER(4),
+        type: dataTypes.INTEGER,
         primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
       firstName: {
         type: dataTypes.STRING(50),
