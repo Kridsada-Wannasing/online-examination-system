@@ -22,6 +22,17 @@ const getAllQuestion = async (req, res, next) => {
 const getQuestion = async (req, res, next) => {
   const target = await db.ObjectiveQuestion.findOne({
     where: { objectiveQuestionId: req.params.questionId },
+    include: [
+      {
+        model: db.ObjectiveAnswer,
+        required: false,
+      },
+      {
+        model: db.QuestionTag,
+        include: [db.Tag],
+        required: false,
+      },
+    ],
   });
 
   if (!target) {
