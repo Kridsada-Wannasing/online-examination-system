@@ -79,10 +79,18 @@ const getExam = async (req, res, next) => {
       include: [
         {
           model: db.ObjectiveQuestion,
+          include: {
+            model: db.ObjectiveAnswer,
+            required: false,
+          },
           required: false,
         },
         {
           model: db.SubjectiveQuestion,
+          include: {
+            model: db.SubjectiveAnswer,
+            required: false,
+          },
           required: false,
         },
       ],
