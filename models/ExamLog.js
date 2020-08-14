@@ -3,7 +3,10 @@ module.exports = (sequelize, dataTypes) => {
     "ExamLog",
     {
       examLogId: {
-        type: dataTypes.INTEGER(8),
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
       answer1: {
         type: dataTypes.STRING(50),
