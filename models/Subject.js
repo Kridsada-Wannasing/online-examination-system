@@ -4,6 +4,8 @@ module.exports = (sequelize, dataTypes) => {
     {
       subjectId: {
         type: dataTypes.INTEGER(8),
+        primaryKey: true,
+        allowNull: false,
       },
       subjectName: {
         type: dataTypes.STRING(50),
