@@ -22,6 +22,7 @@ const getAllSubject = async (req, res, next) => {
 const getSubject = async (req, res, next) => {
   const target = await db.Subject.findOne({
     where: { subjectId: req.params.subjectId },
+    include: { model: db.Section },
   });
 
   if (!target) {
