@@ -1,17 +1,28 @@
 const db = require("../models");
 
 const createExamLog = async (req, res, next) => {
-  const newExamLog = await db.ExamLog.create(req.body);
+  await db.ExamLog.create({
+    ...req.body,
+    examId: req.params.examId,
+    questionId: req.params.questionId,
+    //passport ของ student เก็บใน req.user
+    studentId: req.user,
+  });
 
   res.status(201).json({
     status: "success",
-    message: "สร้างชุดข้อสอบสำเร็จ",
-    newExamLog,
   });
 };
 
 const getAllExamLog = async (req, res, next) => {
-  const allExamLog = await db.ExamLog.findAll();
+  const allExamLog = await db.ExamLog.findAll({
+    where: {
+      examId: req.params.examId,
+      questionId: req.params.questionId,
+      //passport ของ student เก็บใน req.user
+      studentId: req.user,
+    },
+  });
 
   res.status(200).json({
     status: "success",
@@ -27,7 +38,7 @@ const getExamLog = async (req, res, next) => {
   if (!target) {
     res.status(404).json({
       status: "fail",
-      message: "ไม่มีชุดข้อสอบนี้",
+      message: "ยังไม่มีการตอบในข้อนี้",
     });
   }
 
