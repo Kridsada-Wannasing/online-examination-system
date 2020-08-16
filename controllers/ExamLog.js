@@ -18,7 +18,6 @@ const getAllExamLog = async (req, res, next) => {
   const allExamLog = await db.ExamLog.findAll({
     where: {
       examId: req.params.examId,
-      questionId: req.params.questionId,
       //passport ของ student เก็บใน req.user
       studentId: req.user,
     },
@@ -61,7 +60,11 @@ const updateExamLog = async (req, res, next) => {
 
 const deleteExamLog = async (req, res, next) => {
   await db.ExamLog.destroy({
-    where: { examLogId: req.params.examLogId },
+    where: {
+      examId: req.params.examId,
+      //passport ของ student เก็บใน req.user
+      studentId: req.user,
+    },
   });
 
   res.status(204).send();
