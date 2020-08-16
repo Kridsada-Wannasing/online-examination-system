@@ -5,8 +5,8 @@ const createExamLog = async (req, res, next) => {
     ...req.body,
     examId: req.params.examId,
     questionId: req.params.questionId,
-    //passport ของ student เก็บใน req.user
-    studentId: req.user,
+    //passport ของ student เก็บใน req.user.studentId
+    studentId: req.user.studentId,
   });
 
   res.status(201).json({
@@ -18,8 +18,8 @@ const getAllExamLog = async (req, res, next) => {
   const allExamLog = await db.ExamLog.findAll({
     where: {
       examId: req.params.examId,
-      //passport ของ student เก็บใน req.user
-      studentId: req.user,
+      //passport ของ student เก็บใน req.user.studentId
+      studentId: req.user.studentId,
     },
   });
 
@@ -62,8 +62,8 @@ const deleteExamLog = async (req, res, next) => {
   await db.ExamLog.destroy({
     where: {
       examId: req.params.examId,
-      //passport ของ student เก็บใน req.user
-      studentId: req.user,
+      //passport ของ student เก็บใน req.user.studentId
+      studentId: req.user.studentId,
     },
   });
 
