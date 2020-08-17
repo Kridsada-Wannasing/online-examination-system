@@ -3,21 +3,23 @@ module.exports = (sequelize, dataTypes) => {
     "QuestionTag",
     {
       questionTagId: {
-        type: dataTypes.STRING(4),
+        type: dataTypes.INTEGER,
         primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
     },
     {
-      tableName: "questions_tag",
+      tableName: "question_tag",
     }
   );
 
   model.associate = (models) => {
-    model.belongsTo(models.ObjectiveQuestion, {
-      foreignKey: "objectiveQuestionId",
+    model.belongsTo(models.Question, {
+      foreignKey: "questionId",
     });
-    model.belongsTo(models.SubjectiveQuestion, {
-      foreignKey: "subjectiveQuestionId",
+    model.belongsTo(models.Tag, {
+      foreignKey: "tagId",
     });
   };
 
