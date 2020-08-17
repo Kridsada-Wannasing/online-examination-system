@@ -1,6 +1,25 @@
 const db = require("../models");
 
 const createScore = async (req, res, next) => {
+  const yourExamLog = await db.Examlog.findAll({
+    attributes: ["answer"],
+    where: {
+      studentId: req.user.studentId,
+      examId: req.params.examId,
+    },
+  });
+
+  const collectAnswer = await db.QuestionExam.findAll({
+    attributes: ["questionId"],
+    where: {
+      examId: req.params.examId,
+    },
+    include: {
+      model: db.Question,
+      include: [db.Answer],
+    },
+  });
+
   const newScore = await db.Score.create(req.body);
 
   res.status(201).json({
