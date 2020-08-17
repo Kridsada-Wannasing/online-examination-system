@@ -1,7 +1,7 @@
 const db = require("../models");
 
 const createQuestion = async (req, res, next) => {
-  const newQuestion = await db.ObjectiveQuestion.create(req.body);
+  const newQuestion = await db.Question.create(req.body);
 
   res.status(201).json({
     status: "success",
@@ -11,7 +11,7 @@ const createQuestion = async (req, res, next) => {
 };
 
 const getAllQuestion = async (req, res, next) => {
-  const allQuestion = await db.ObjectiveQuestion.findAll();
+  const allQuestion = await db.Question.findAll();
 
   res.status(200).json({
     status: "success",
@@ -20,11 +20,11 @@ const getAllQuestion = async (req, res, next) => {
 };
 
 const getQuestion = async (req, res, next) => {
-  const target = await db.ObjectiveQuestion.findOne({
-    where: { objectiveQuestionId: req.params.questionId },
+  const target = await db.Question.findOne({
+    where: { questionId: req.params.questionId },
     include: [
       {
-        model: db.ObjectiveAnswer,
+        model: db.Answer,
         required: false,
       },
       {
@@ -49,8 +49,8 @@ const getQuestion = async (req, res, next) => {
 };
 
 const updateQuestion = async (req, res, next) => {
-  await db.ObjectiveQuestion.update(req.body, {
-    where: { objectiveQuestionId: req.params.questionId },
+  await db.Question.update(req.body, {
+    where: { questionId: req.params.questionId },
   });
 
   res.status(200).json({
@@ -60,8 +60,8 @@ const updateQuestion = async (req, res, next) => {
 };
 
 const deleteQuestion = async (req, res, next) => {
-  await db.ObjectiveQuestion.destroy({
-    where: { objectiveQuestionId: req.params.questionId },
+  await db.Question.destroy({
+    where: { questionId: req.params.questionId },
   });
 
   res.status(204).send();
