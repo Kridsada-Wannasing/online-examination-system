@@ -1,10 +1,18 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const pick = require("lodash/pick");
+
+const mapArrayOfObject = function (arrOfObj, id) {
+  return arrOfObj.map((obj) => ({
+    questionId,
+    ...obj,
+  }));
+};
 
 const createExamInSubject = async (req, res, next) => {
   const newExam = await db.Exam.create({
     subjectId: req.params.subjectId,
-    teacherId: req.teacher.teacherId,
+    teacherId: req.user.teacherId,
     ...req.body,
   });
 
@@ -16,40 +24,21 @@ const createExamInSubject = async (req, res, next) => {
 };
 
 const addQuestionInExam = async (req, res, next) => {
-  const { questionType, tagId } = req.body;
-  delete req.body.questionType;
-  delete req.body.tagId;
+  const question = pick(req.body, ["question", "questionType", "level"]);
 
-  const mapOfTagId = tagId.map((id) => ({
-    tagId: id,
-    questionType: questionType,
-  }));
+  const newQuestion = await db.Question.create(question);
+  await db.QuestionExam.create({
+    examId: req.params.examId,
+    questionId: newQuestion.questionId,
+  });
 
-  //ถ้าเป็นปรนัย
-  if (questionType === "Objective") {
-    await db.ObjectiveQuestion.create(req.body);
-    await db.QuestionExam.create({
-      questionType: questionType,
-      examId: req.params.examId,
-    });
-    await db.QuestionTag.bulkCreate(mapOfTagId);
-  }
-  //ถ้าเป็นอัตนัย
-  else if (questionType === "Subjective") {
-    await db.SubjectiveQuestion.create(req.body);
-    await db.QuestionExam.create({
-      questionType: questionType,
-      examId: req.params.examId,
-    });
-    await db.QuestionTag.bulkCreate(mapOfTagId);
-  }
-  //ถ้าไม่ตรงเงื่อนไขใดๆเลย
-  else {
-    res.status(400).json({
-      status: "fail",
-      message: "สร้างคำถามไม่สำเร็จ",
-    });
-  }
+  const choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
+  const tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
+  const answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
+
+  await db.Choice.bulkCreate(choice);
+  await db.QuestionTag.bulkCreate(tag);
+  await db.Answer.bulkCreate(answer);
 
   res.status(201).json({
     status: "success",
@@ -78,23 +67,10 @@ const getExam = async (req, res, next) => {
       model: db.QuestionExam,
       include: [
         {
-          model: db.ObjectiveQuestion,
-          include: {
-            model: db.ObjectiveAnswer,
-            required: false,
-          },
-          required: false,
-        },
-        {
-          model: db.SubjectiveQuestion,
-          include: {
-            model: db.SubjectiveAnswer,
-            required: false,
-          },
-          required: false,
+          model: db.Question,
+          include: [db.Answer],
         },
       ],
-      required: false,
     },
   });
 
@@ -124,25 +100,29 @@ const updateExam = async (req, res, next) => {
 };
 
 const editQuesitonInExam = async (req, res, next) => {
-  //ถ้าเป็นปรนัย
-  if (req.body.questionType === "Objective") {
-    await db.ObjectiveQuestion.update(req.body, {
+  const { question, questionType, level } = req.body;
+  const updateQuestion = await db.Question.update(
+    {
+      question,
+      questionType,
+      level,
+    },
+    {
       where: { questionId: req.params.questionId },
-    });
-  }
-  //ถ้าเป็นอัตนัย
-  else if (req.body.questionType === "Subjective") {
-    await db.SubjectiveQuestion.update(req.body, {
-      where: { questionId: req.params.questionId },
-    });
-  }
-  //ถ้าไม่ตรงเงื่อนไขใดๆเลย
-  else {
-    res.status(400).json({
-      status: "fail",
-      message: "แก้ไขคำถามไม่สำเร็จ",
-    });
-  }
+    }
+  );
+
+  await db.Choice.update(req.body.choice, {
+    where: { choiceId: req.params.choiceId },
+  });
+  await db.Question.update(req.body, {
+    where: { questionId: req.params.questionId },
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "แก้ไขคำถามสำเร็จ",
+  });
 };
 
 const deleteExam = async (req, res, next) => {
