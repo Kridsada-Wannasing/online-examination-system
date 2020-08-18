@@ -1,10 +1,10 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const pick = require("lodash/pick");
+const FilterObject = require("../utils/FilterObject");
 
 const mapArrayOfObject = function (arrOfObj, id) {
   return arrOfObj.map((obj) => ({
-    questionId,
+    questionId: id,
     ...obj,
   }));
 };
@@ -24,7 +24,7 @@ const createExamInSubject = async (req, res, next) => {
 };
 
 const addQuestionInExam = async (req, res, next) => {
-  const question = pick(req.body, ["question", "questionType", "level"]);
+  const question = new FilterObject(req.body, req.body.allowedFields);
 
   const newQuestion = await db.Question.create(question);
   await db.QuestionExam.create({
@@ -100,24 +100,23 @@ const updateExam = async (req, res, next) => {
 };
 
 const editQuesitonInExam = async (req, res, next) => {
-  const { question, questionType, level } = req.body;
-  const updateQuestion = await db.Question.update(
-    {
-      question,
-      questionType,
-      level,
-    },
-    {
-      where: { questionId: req.params.questionId },
-    }
-  );
-
-  await db.Choice.update(req.body.choice, {
-    where: { choiceId: req.params.choiceId },
-  });
-  await db.Question.update(req.body, {
+  let editedFields = new FilterObject(req.body, req.body.allowedFields);
+  const updatedQuestion = await db.Question.update(editedFields, {
     where: { questionId: req.params.questionId },
   });
+
+  const updatedChoice = await db.Choice.update(
+    { choice: req.body.choice.choice },
+    {
+      where: { choiceId: req.params.choiceId },
+    }
+  );
+  const updatedTag = await db.QuestionTag.update(
+    { tagId: req.body.tag.tagId },
+    {
+      where: { questionTagId: req.params.questionTagId },
+    }
+  );
 
   res.status(200).json({
     status: "success",
