@@ -9,6 +9,7 @@ const app = express();
 const studentRoutes = require("./routes/Student");
 const teacherRoute = require("./routes/Teacher");
 const examRoute = require("./routes/Exam");
+const questionRoute = require("./routes/Question");
 
 require("./config/passport/Student");
 require("./config/passport/Teacher");
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoute);
 app.use("/exam", examRoute);
+app.use("/question", questionRoute);
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
