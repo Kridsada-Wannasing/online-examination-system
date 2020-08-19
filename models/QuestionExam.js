@@ -4,10 +4,13 @@ module.exports = (sequelize, dataTypes) => {
     {
       questionExamId: {
         type: dataTypes.STRING(20),
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
     },
     {
-      tableName: "objective_questions",
+      tableName: "question_exam",
     }
   );
 
@@ -15,11 +18,8 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Exam, {
       foriegnKey: "examId",
     });
-    model.belongsTo(models.ObjectiveQuestion, {
-      foriegnKey: "objectiveQuestionId",
-    });
-    model.belongsTo(models.SubjectiveQuestion, {
-      foriegnKey: "subjectiveQuestionId",
+    model.belongsTo(models.Question, {
+      foriegnKey: "questionId",
     });
   };
 
