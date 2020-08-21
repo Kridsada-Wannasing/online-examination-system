@@ -25,7 +25,8 @@ const createScore = async (req, res, next) => {
   res.status(201).json({
     status: "success",
     message: "สร้างคะแนนสำเร็จ",
-    newScore,
+    yourExamLog,
+    collectAnswer,
   });
 };
 
