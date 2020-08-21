@@ -14,6 +14,8 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "tags",
+      timestamps: false,
+      underscored: false,
     }
   );
 
