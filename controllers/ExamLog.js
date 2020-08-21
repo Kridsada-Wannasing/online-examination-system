@@ -10,6 +10,7 @@ const mapArrayOfObject = function (arr, examId, questionId, studentId) {
 };
 
 const createExamLog = async (req, res, next) => {
+  //map req.body ที่ส่งมาจากหน้าบ้าน ด้วย id ของชุดข้อสอบ คำถามข้อนั้น และผู้เข้าสอบ
   const result = mapArrayOfObject(
     req.body,
     req.params.examId,
