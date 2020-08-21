@@ -2,13 +2,13 @@ module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
     "Choice",
     {
-      chioceId: {
+      choiceId: {
         type: dataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true,
       },
-      chioce: {
+      choice: {
         type: dataTypes.STRING(255),
       },
       order: {
@@ -16,7 +16,8 @@ module.exports = (sequelize, dataTypes) => {
       },
     },
     {
-      tableName: "chioces",
+      tableName: "choices",
+      underscored: false,
     }
   );
 
