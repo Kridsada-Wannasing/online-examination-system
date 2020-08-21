@@ -18,7 +18,7 @@ module.exports = (sequelize, dataTypes) => {
         type: dataTypes.STRING(50),
       },
       password: {
-        type: dataTypes.STRING(10),
+        type: dataTypes.STRING,
       },
       faculty: {
         type: dataTypes.STRING(100),
@@ -29,6 +29,8 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "teachers",
+      timestamps: false,
+      underscored: false,
     }
   );
 
