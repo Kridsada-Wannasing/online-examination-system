@@ -24,25 +24,31 @@ const createExamInSubject = async (req, res, next) => {
 };
 
 const addQuestionInExam = async (req, res, next) => {
-  const question = new FilterObject(req.body, req.body.allowedFields);
-
-  const newQuestion = await db.Question.create(question);
+  const newQuestion = await db.Question.create({
+    questionType: req.body.questionType,
+    question: req.body.question,
+    level: req.body.level,
+  });
   await db.QuestionExam.create({
     examId: req.params.examId,
     questionId: newQuestion.questionId,
   });
 
-  const choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
-  const tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
-  const answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
+  let choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
+  let tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
+  let answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
 
-  await db.Choice.bulkCreate(choice);
-  await db.QuestionTag.bulkCreate(tag);
-  await db.Answer.bulkCreate(answer);
+  choice = await db.Choice.bulkCreate(choice);
+  tag = await db.QuestionTag.bulkCreate(tag);
+  answer = await db.Answer.bulkCreate(answer);
 
   res.status(201).json({
     status: "success",
     message: "สร้างคำถามเรียบร้อย",
+    newQuestion,
+    choice,
+    tag,
+    answer,
   });
 };
 
@@ -65,12 +71,17 @@ const getExam = async (req, res, next) => {
     where: { examId: req.params.examId },
     include: {
       model: db.QuestionExam,
-      include: [
-        {
-          model: db.Question,
-          include: [db.Answer],
-        },
-      ],
+      include: {
+        model: db.Question,
+        include: [
+          { model: db.Choice },
+          { model: db.Answer },
+          {
+            model: db.QuestionTag,
+            include: [db.Tag],
+          },
+        ],
+      },
     },
   });
 
