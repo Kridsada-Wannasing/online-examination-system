@@ -3,7 +3,10 @@ module.exports = (sequelize, dataTypes) => {
     "Score",
     {
       scoreId: {
-        type: dataTypes.INTEGER(8),
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
       score: {
         type: dataTypes.INTEGER(3),
