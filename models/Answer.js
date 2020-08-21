@@ -14,6 +14,7 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "answers",
+      underscored: false,
     }
   );
 
