@@ -20,6 +20,7 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "questions",
+      underscored: false,
     }
   );
 
@@ -28,6 +29,12 @@ module.exports = (sequelize, dataTypes) => {
       foreignKey: "questionId",
     });
     model.hasMany(models.Answer, {
+      foreignKey: "questionId",
+    });
+    model.hasMany(models.Choice, {
+      foreignKey: "questionId",
+    });
+    model.hasMany(models.QuestionTag, {
       foreignKey: "questionId",
     });
   };
