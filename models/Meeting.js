@@ -1,11 +1,13 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define("Meeting", {
     meetingId: {
-      type: dataTypes.INTEGER(4),
+      type: dataTypes.INTEGER,
       primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
     },
     examDate: {
-      type: dataTypes.DATE(6),
+      type: dataTypes.DATE,
     },
   });
 
