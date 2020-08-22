@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const subjectController = require("../controllers/Subject");
+const subjectControllers = require("../controllers/Subject");
 
-router.post("/create-subject", subjectController.createSubject);
-router.get("/all-subject", subjectController.getAllSubject);
-router.get("/:subjectId", subjectController.getSubject);
-router.patch("/edit-subject/:subjectId", subjectController.updateSubject);
-router.delete("/delete-subject/:subjectId", subjectController.deleteSubject);
+router.post("/", subjectControllers.createSubject);
+router.get("/", subjectControllers.getAllSubject);
+router.get("/:subjectId", subjectControllers.getSubject);
+router.patch("/:subjectId", subjectControllers.updateSubject);
+router.delete("/:subjectId", subjectControllers.deleteSubject);
 
 module.exports = router;
