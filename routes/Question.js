@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const questionController = require("../controllers/Question");
+const questionControllers = require("../controllers/Question");
 
-router.get("/", questionController.getAllQuestion);
-router.get("/:questionId", questionController.getQuestion);
-router.post("/:examId", questionController.createQuestionInExam);
-router.patch("/:examId/:questionId", questionController.updateQuestionInExam);
-router.delete("/:questionId", questionController.deleteQuestion);
+router.get("/", questionControllers.getAllQuestion);
+router.get("/:questionId", questionControllers.getQuestion);
+router.post("/:examId", questionControllers.createQuestionInExam);
+router.patch("/:examId/:questionId", questionControllers.updateQuestionInExam);
+router.delete("/:questionId", questionControllers.deleteQuestion);
 
 module.exports = router;
