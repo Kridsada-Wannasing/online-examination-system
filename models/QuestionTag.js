@@ -11,7 +11,6 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "question_tags",
-      timestamps: false,
       underscored: false,
     }
   );
