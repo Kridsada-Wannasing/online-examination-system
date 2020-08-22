@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const tagController = require("../controllers/Tag");
+const tagControllers = require("../controllers/Tag");
 
-router.post("/create-tag", tagController.createTag);
-router.get("/all", tagController.getAllTag);
-router.get("/:tagId", tagController.getTag);
-router.patch("/edit-tag/:tagId", tagController.updateTag);
-router.delete("/delete-tag/:tagId", tagController.deleteTag);
+router.post("/", tagControllers.createTag);
+router.get("/", tagControllers.getAllTag);
+router.get("/:tagId", tagControllers.getTag);
+router.patch("/:tagId", tagControllers.updateTag);
+router.delete("/:tagId", tagControllers.deleteTag);
 
 module.exports = router;
