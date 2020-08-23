@@ -18,9 +18,9 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Teacher, {
       foreignKey: "teacherId",
     });
-    model.belongsTo(models.Section, {
-      foreignKey: "sectionId",
-    });
+    // model.belongsTo(models.Section, {
+    //   foreignKey: "sectionId",
+    // });
   };
 
   return model;
