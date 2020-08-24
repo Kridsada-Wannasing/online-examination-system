@@ -1,11 +1,13 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define("Meeting", {
     meetingId: {
-      type: dataTypes.INTEGER(4),
+      type: dataTypes.INTEGER,
       primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
     },
     examDate: {
-      type: dataTypes.DATE(6),
+      type: dataTypes.DATE,
     },
   });
 
@@ -16,9 +18,9 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Teacher, {
       foreignKey: "teacherId",
     });
-    model.belongsTo(models.Section, {
-      foreignKey: "sectionId",
-    });
+    // model.belongsTo(models.Section, {
+    //   foreignKey: "sectionId",
+    // });
   };
 
   return model;
