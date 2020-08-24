@@ -1,67 +1,87 @@
 const db = require("../models");
 
 const createTag = async (req, res, next) => {
-  const target = await db.Tag.findOne({ where: { tagName: req.body.tagName } });
+  try {
+    const newTag = await db.Tag.create(req.body);
 
-  if (target) {
+    res.status(201).json({
+      status: "success",
+      message: "สร้างป้ายระบุสำเร็จ",
+      newTag,
+    });
+  } catch (error) {
     res.status(400).json({
       status: "fail",
-      message: "มีป้ายระบุนี้อยู่แล้ว",
+      error,
     });
   }
-
-  await db.Tag.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    message: "สร้างป้ายระบุสำเร็จ",
-  });
 };
 
 const getAllTag = async (req, res, next) => {
-  const allTag = await db.Tag.findAll();
+  try {
+    const allTag = await db.Tag.findAll();
 
-  res.status(200).json({
-    status: "success",
-    allTag,
-  });
+    res.status(200).json({
+      status: "success",
+      allTag,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getTag = async (req, res, next) => {
-  const target = await db.Tag.findOne({
-    where: { tagId: req.params.tagId },
-  });
+  try {
+    const target = await db.Tag.findOne({
+      where: { tagId: req.params.tagId },
+    });
 
-  if (!target) {
-    res.status(404).json({
+    res.status(200).json({
+      status: "success",
+      target,
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "fail",
-      message: "ไม่มีป้ายระบุนี้",
+      error,
     });
   }
-
-  res.status(200).json({
-    status: "success",
-    target,
-  });
 };
 
 const updateTag = async (req, res, next) => {
-  await db.Tag.update(req.body, {
-    where: { tagId: req.params.tagId },
-  });
+  try {
+    await db.Tag.update(req.body, {
+      where: { tagId: req.params.tagId },
+    });
 
-  res.status(200).json({
-    status: "succes",
-    message: "เปลี่ยนแปลงป้ายระบุนี้สำเร็จ",
-  });
+    res.status(200).json({
+      status: "succes",
+      message: "เปลี่ยนแปลงป้ายระบุนี้สำเร็จ",
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const deleteTag = async (req, res, next) => {
-  await db.Tag.destroy({
-    where: { tagId: req.params.tagId },
-  });
+  try {
+    await db.Tag.destroy({
+      where: { tagId: req.params.tagId },
+    });
 
-  res.status(204).send();
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 module.exports = {
