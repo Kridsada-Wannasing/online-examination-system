@@ -1,63 +1,92 @@
 const db = require("../models");
 
 const createMeeting = async (req, res, next) => {
-  const newMeeting = await db.Meeting.create({
-    ...req.body,
-    teacherId: req.user,
-  });
+  try {
+    const newMeeting = await db.Meeting.create({
+      ...req.body,
+      teacherId: req.user,
+    });
 
-  res.status(201).json({
-    status: "success",
-    message: "สร้างการนัดหมายสำเร็จ",
-    newMeeting,
-  });
+    res.status(201).json({
+      status: "success",
+      message: "สร้างการนัดหมายสำเร็จ",
+      newMeeting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getAllMeeting = async (req, res, next) => {
-  const allMeeting = await db.Meeting.findAll();
+  try {
+    const allMeeting = await db.Meeting.findAll();
 
-  res.status(200).json({
-    status: "success",
-    allMeeting,
-  });
+    res.status(200).json({
+      status: "success",
+      allMeeting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getMeeting = async (req, res, next) => {
-  const target = await db.Meeting.findOne({
-    where: { meetingId: req.params.meetingId },
-    include: [db.Exam, db.Section, db.Teacher],
-  });
+  try {
+    const target = await db.Meeting.findOne({
+      where: { meetingId: req.params.meetingId },
+      include: [db.Exam, db.Section, db.Teacher],
+    });
 
-  if (!target) {
-    res.status(404).json({
+    res.status(200).json({
+      status: "success",
+      target,
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "fail",
-      message: "ไม่มีการนัดหมายนี้",
+      error,
     });
   }
-
-  res.status(200).json({
-    status: "success",
-    target,
-  });
 };
 
 const updateMeeting = async (req, res, next) => {
-  await db.Meeting.update(req.body, {
-    where: { meetingId: req.params.meetingId },
-  });
+  try {
+    const updatedMeeting = await db.Meeting.update(req.body, {
+      where: { meetingId: req.params.meetingId },
+    });
 
-  res.status(200).json({
-    status: "succes",
-    message: "เปลี่ยนแปลงข้อมูลการนัดหมายนี้สำเร็จ",
-  });
+    res.status(200).json({
+      status: "succes",
+      message: "เปลี่ยนแปลงข้อมูลการนัดหมายนี้สำเร็จ",
+      updatedMeeting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const deleteMeeting = async (req, res, next) => {
-  await db.Meeting.destroy({
-    where: { meetingId: req.params.meetingId },
-  });
+  try {
+    await db.Meeting.destroy({
+      where: { meetingId: req.params.meetingId },
+    });
 
-  res.status(204).send();
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 module.exports = {
