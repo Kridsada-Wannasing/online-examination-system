@@ -9,106 +9,134 @@ const mapArrayOfObject = function (arrOfObj, id) {
 };
 
 const createQuestionInExam = async (req, res, next) => {
-  const newQuestion = await db.Question.create({
-    questionType: req.body.questionType,
-    question: req.body.question,
-    level: req.body.level,
-  });
-  await db.QuestionExam.create({
-    examId: req.params.examId,
-    questionId: newQuestion.questionId,
-  });
+  try {
+    const newQuestion = await db.Question.create({
+      questionType: req.body.questionType,
+      question: req.body.question,
+      level: req.body.level,
+    });
+    await db.QuestionExam.create({
+      examId: req.params.examId,
+      questionId: newQuestion.questionId,
+    });
 
-  let choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
-  let tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
-  let answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
+    let choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
+    let tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
+    let answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
 
-  choice = await db.Choice.bulkCreate(choice);
-  tag = await db.QuestionTag.bulkCreate(tag);
-  answer = await db.Answer.bulkCreate(answer);
+    choice = await db.Choice.bulkCreate(choice);
+    tag = await db.QuestionTag.bulkCreate(tag);
+    answer = await db.Answer.bulkCreate(answer);
 
-  res.status(201).json({
-    status: "success",
-    message: "สร้างคำถามเรียบร้อย",
-    newQuestion,
-    choice,
-    tag,
-    answer,
-  });
+    res.status(201).json({
+      status: "success",
+      message: "สร้างคำถามเรียบร้อย",
+      newQuestion,
+      choice,
+      tag,
+      answer,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getAllQuestion = async (req, res, next) => {
-  const allQuestion = await db.Question.findAll();
+  try {
+    const allQuestion = await db.Question.findAll();
 
-  res.status(200).json({
-    status: "success",
-    allQuestion,
-  });
+    res.status(200).json({
+      status: "success",
+      allQuestion,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getQuestion = async (req, res, next) => {
-  const target = await db.Question.findOne({
-    where: { questionId: req.params.questionId },
-    include: [
-      {
-        model: db.Answer,
-        required: false,
-      },
-      {
-        model: db.QuestionTag,
-        include: [db.Tag],
-        required: false,
-      },
-    ],
-  });
+  try {
+    const target = await db.Question.findOne({
+      where: { questionId: req.params.questionId },
+      include: [
+        {
+          model: db.Answer,
+          required: false,
+        },
+        {
+          model: db.QuestionTag,
+          include: [db.Tag],
+          required: false,
+        },
+      ],
+    });
 
-  if (!target) {
-    res.status(404).json({
+    res.status(200).json({
+      status: "success",
+      target,
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "fail",
-      message: "ไม่มีคำถามนี้ในระบบ",
+      error,
     });
   }
-
-  res.status(200).json({
-    status: "success",
-    target,
-  });
 };
 
 const updateQuestionInExam = async (req, res, next) => {
-  let editedFields = new FilterObject(req.body, req.body.allowedFields);
-  const updatedQuestion = await db.Question.update(editedFields, {
-    where: { questionId: req.params.questionId },
-  });
+  try {
+    let editedFields = new FilterObject(req.body, req.body.allowedFields);
+    const updatedQuestion = await db.Question.update(editedFields, {
+      where: { questionId: req.params.questionId },
+    });
 
-  const updatedChoice = await db.Choice.update(
-    { choice: req.body.choice.choice },
-    {
-      where: { choiceId: req.params.choiceId },
-    }
-  );
-  const updatedTag = await db.QuestionTag.update(
-    { tagId: req.body.tag.tagId },
-    {
-      where: { questionTagId: req.params.questionTagId },
-    }
-  );
+    const updatedChoice = await db.Choice.update(
+      { choice: req.body.choice.choice },
+      {
+        where: { choiceId: req.params.choiceId },
+      }
+    );
+    const updatedTag = await db.QuestionTag.update(
+      { tagId: req.body.tag.tagId },
+      {
+        where: { questionTagId: req.params.questionTagId },
+      }
+    );
 
-  res.status(200).json({
-    status: "success",
-    message: "แก้ไขคำถามสำเร็จ",
-    updatedQuestion,
-    updatedChoice,
-    updatedTag,
-  });
+    res.status(200).json({
+      status: "success",
+      message: "แก้ไขคำถามสำเร็จ",
+      updatedQuestion,
+      updatedChoice,
+      updatedTag,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const deleteQuestion = async (req, res, next) => {
-  await db.Question.destroy({
-    where: { questionId: req.params.questionId },
-  });
+  try {
+    await db.Question.destroy({
+      where: { questionId: req.params.questionId },
+    });
 
-  res.status(204).send();
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 module.exports = {
