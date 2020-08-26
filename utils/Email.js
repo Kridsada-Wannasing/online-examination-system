@@ -3,10 +3,15 @@ const htmlToText = require("html-to-text");
 const ejs = require("ejs");
 
 module.exports = class Email {
-  constructor(user, url) {
+  constructor(
+    user,
+    url,
+    object /*object ของ score meeting หรือ user ที่อัพเดทข้อมูลแล้ว ที่รับเข้ามาเป็นค่าเริ่มต้น*/
+  ) {
     this.to = user.email;
     this.firstName = user.firstName;
     this.url = url;
+    this.object = object;
     this.from = `Kridsada Wannasing <${process.env.EMAIL_FROM}>`;
   }
 
@@ -34,6 +39,8 @@ module.exports = class Email {
     const html = await ejs.renderFile(`${__dirname}/../views/${template}.ejs`, {
       firstName: this.firstName,
       url: this.url,
+      object: this
+        .object /*object ของ score meeting หรือ user ที่อัพเดทข้อมูลแล้ว*/,
       subject,
     });
 
@@ -52,7 +59,7 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    await this.send("welcome", "ยินดีต้อนรับ");
+    await this.send("welcome", "สมัครสมาชิกสำเร็จ");
   }
 
   async sendPasswordReset() {
