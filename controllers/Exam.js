@@ -96,8 +96,15 @@ const updateExam = async (req, res, next) => {
 
 const deleteExam = async (req, res, next) => {
   try {
+    await db.QuestionExam.destroy({
+      where: {
+        examId: req.params.examId,
+      },
+    });
     await db.Exam.destroy({
-      where: { examId: req.params.examId },
+      where: {
+        examId: req.params.examId,
+      },
     });
 
     res.status(204).send();
