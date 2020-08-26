@@ -14,7 +14,6 @@ const scoreRoute = require("./routes/Score");
 
 require("./config/passport/Student");
 require("./config/passport/Teacher");
-const examLogRoute = require("./models/ExamLog");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,7 +27,6 @@ app.use("/teacher", teacherRoute);
 app.use("/exam", examRoute);
 app.use("/question", questionRoute);
 app.use("/score", scoreRoute);
-app.use("/exam-log", examLogRoute);
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
