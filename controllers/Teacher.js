@@ -2,6 +2,7 @@ const db = require("../models");
 const differenceBy = require("lodash/differenceBy");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const FilterObject = require("../utils/FilterObject");
 
 const passwordGenerator = (params) => {
   params = String(params).substring(9);
@@ -80,9 +81,30 @@ const getMe = (req, res, next) => {
   res.status(200).json(req.user);
 };
 
+const updateMe = (req, res, next) => {
+  try {
+    const filteredBody = new FilterObject(req.body, "username", "email");
+    const updatedAccount = db.Teacher.update(filteredBody, {
+      where: { teacherId: req.user.teacherId },
+    });
+
+    res.status(204).json({
+      status: "success",
+      message: "อัพเดทข้อมูลผู้ใช้สำเร็จ",
+      updatedAccount,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 module.exports = {
   registerOne,
   registerMany,
   login,
   getMe,
+  updateMe,
 };

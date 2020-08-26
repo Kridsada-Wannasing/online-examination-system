@@ -2,18 +2,16 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 
-const teacherController = require("../controllers/Teacher");
-const examNestedRoute = require("./Exam");
+const teacherControllers = require("../controllers/Teacher");
 
 const auth = passport.authenticate("teacher-jwt", { session: false });
 
-router.post("/login", teacherController.login);
-
 router.use(auth);
-router.post("/register-one", teacherController.registerOne);
-router.post("/register-many", teacherController.registerMany);
-router.get("/me", teacherController.getMe);
 
-router.use("/exam", examNestedRoute);
+router.post("/register-one", teacherControllers.registerOne);
+router.post("/register-many", teacherControllers.registerMany);
+router.post("/login", teacherControllers.login);
+router.get("/me", teacherControllers.getMe);
+router.post("/updateMe", teacherControllers.updateMe);
 
 module.exports = router;
