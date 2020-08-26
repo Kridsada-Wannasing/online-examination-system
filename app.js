@@ -6,7 +6,9 @@ const db = require("./models");
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
+const studentRoutes = require("./routes/Student");
 const teacherRoute = require("./routes/Teacher");
+const examRoute = require("./routes/Exam");
 
 require("./config/passport/Student");
 require("./config/passport/Teacher");
@@ -18,7 +20,9 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan());
 }
 
+app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoute);
+app.use("/exam", examRoute);
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
