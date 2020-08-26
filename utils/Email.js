@@ -60,6 +60,22 @@ module.exports = class Email {
   }
 
   async sendUpdatePassword() {
-    await this.send("passwordReset", "้เปลี่ยนแปลงรหัสผ่าน");
+    await this.send("updatePassword", "้เปลี่ยนแปลงรหัสผ่าน");
+  }
+
+  async sendUpdateMe() {
+    await this.send("updateMe", "เปลี่ยนแปลงข้อมูลผู้ใช้");
+  }
+
+  async sendScoreResult() {
+    await this.send("scoreResult", "แจ้งผลคะแนนสอบ");
+  }
+
+  async sendMeeting() {
+    await this.send("meeting", "นัดหมายการสอบ");
+  }
+
+  async sendUpdateMeeting() {
+    await this.send("updateMeeting", "เลื่อนการสอบ");
   }
 };
