@@ -8,7 +8,6 @@ const morgan = require("morgan");
 const app = express();
 const teacherRoutes = require("./routes/Teacher");
 
-require("./config/passport/Student");
 require("./config/passport/Teacher");
 
 app.use(express.json());
