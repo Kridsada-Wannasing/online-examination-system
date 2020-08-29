@@ -4,6 +4,7 @@ const router = express.Router();
 const Upload = require("../utils/Upload");
 
 const questionControllers = require("../controllers/Question");
+const imageControllers = require("../controllers/Image");
 
 router.get("/", questionControllers.getAllQuestion);
 router.get("/:questionId", questionControllers.getQuestion);
