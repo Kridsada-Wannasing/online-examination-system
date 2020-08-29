@@ -9,7 +9,7 @@ const createQuestion = async (req, res, next) => {
       level: req.body.level,
     });
     await db.QuestionExam.create({
-      examId: req.params.examId,
+      examId: req.body.examId,
       questionId: newQuestion.questionId,
     });
 
