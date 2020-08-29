@@ -8,14 +8,14 @@ const imageFilter = (req, file, cb) => {
   }
 };
 
-let storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, __dirname + "/resources/static/assets/uploads/");
+    cb(null, "public/img");
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-bezkoder-${file.originalname}`);
+    cb(null, `${Date.now()}-${req.user.teacherId}-${file.originalname}`);
   },
 });
 
-let uploadFile = multer({ storage: storage, fileFilter: imageFilter });
-module.exports = uploadFile;
+const Upload = multer({ storage: storage, fileFilter: imageFilter });
+module.exports = Upload;
