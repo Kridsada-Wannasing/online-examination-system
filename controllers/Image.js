@@ -14,12 +14,10 @@ const uploadImage = async (req, res, next) => {
       questionId: req.params.questionId,
       type: req.file.mimetype,
       name: req.file.originalname,
-      data: fs.readFileSync(
-        __dirname + "/resources/static/assets/uploads/" + req.file.filename
-      ),
+      data: fs.readFileSync("/public/img/uploads/" + req.file.filename),
     });
-    const newImage = await fs.writeFileSync(
-      __dirname + "/resources/static/assets/tmp/" + image.name,
+    const newImage = fs.writeFileSync(
+      "/public/img/tmp/" + image.name,
       image.data
     );
 
