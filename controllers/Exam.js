@@ -1,7 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 
-const createExamInSubject = async (req, res, next) => {
+const createExam = async (req, res, next) => {
   try {
     const newExam = await db.Exam.create({
       subjectId: req.params.subjectId,
@@ -110,7 +110,7 @@ const deleteExam = async (req, res, next) => {
 };
 
 module.exports = {
-  createExamInSubject,
+  createExam,
   getAllExam,
   getExam,
   updateExam,
