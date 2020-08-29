@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const createExam = async (req, res, next) => {
   try {
     const newExam = await db.Exam.create({
-      subjectId: req.params.subjectId,
+      subjectId: req.body.subjectId,
       teacherId: req.user.teacherId,
       ...req.body,
     });
@@ -31,6 +31,8 @@ const getAllExam = async (req, res, next) => {
       },
     });
 
+    if (target) res.status(404).send("หาข้อมูลไม่พบ");
+
     res.status(200).json({
       status: "success",
       allExam,
@@ -51,14 +53,7 @@ const getExam = async (req, res, next) => {
         model: db.QuestionExam,
         include: {
           model: db.Question,
-          include: [
-            { model: db.Choice },
-            { model: db.Answer },
-            {
-              model: db.QuestionTag,
-              include: [db.Tag],
-            },
-          ],
+          include: [db.Choice],
         },
       },
     });
