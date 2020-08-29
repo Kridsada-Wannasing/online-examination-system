@@ -31,8 +31,6 @@ const getAllExam = async (req, res, next) => {
       },
     });
 
-    if (target) res.status(404).send("หาข้อมูลไม่พบ");
-
     res.status(200).json({
       status: "success",
       allExam,
@@ -57,6 +55,8 @@ const getExam = async (req, res, next) => {
         },
       },
     });
+
+    if (!target) res.status(404).send("หาข้อมูลไม่พบ");
 
     res.status(200).json({
       status: "success",
