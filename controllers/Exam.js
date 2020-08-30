@@ -23,11 +23,14 @@ const createExam = async (req, res, next) => {
 };
 
 const getAllExam = async (req, res, next) => {
+  //ส่ง query string มาเพื่อ get ข้อมูลออกไปตาม field ที่กำหนด
+  const queryString = req.query;
   try {
     const allExam = await db.Exam.findAll({
       //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
       where: {
         [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
+        ...queryString,
       },
     });
 
