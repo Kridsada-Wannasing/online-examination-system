@@ -22,6 +22,22 @@ const createExam = async (req, res, next) => {
   }
 };
 
+const duplicateExam = async (req, res, next) => {
+  try {
+    const newDuplicateExam = await db.Exam.create(req.body);
+
+    res.status(200).json({
+      status: "success",
+      newDuplicateExam,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const getAllExam = async (req, res, next) => {
   //ส่ง query string มาเพื่อ get ข้อมูลออกไปตาม field ที่กำหนด
   const queryString = req.query;
@@ -109,6 +125,7 @@ const deleteExam = async (req, res, next) => {
 
 module.exports = {
   createExam,
+  duplicateExam,
   getAllExam,
   getExam,
   updateExam,
