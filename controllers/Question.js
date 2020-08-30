@@ -27,8 +27,10 @@ const createQuestion = async (req, res, next) => {
 };
 
 const getAllQuestion = async (req, res, next) => {
+  //ส่ง query string มาเพื่อ get ข้อมูลออกไปตาม field ที่กำหนด
+  const queryString = req.query;
   try {
-    const allQuestion = await db.Question.findAll();
+    const allQuestion = await db.Question.findAll({ where: queryString });
 
     res.status(200).json({
       status: "success",
