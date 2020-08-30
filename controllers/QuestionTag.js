@@ -18,12 +18,6 @@ const addTagToQuestion = async (req, res, next) => {
 
 const updateTagOfQuestion = async (req, res, next) => {
   try {
-    await db.QuestionTag.destroy({
-      where: {
-        questionId: req.body.questionId,
-      },
-    });
-
     const updatedTagOfQuestion = await db.QuestionTag.bulkCreate(req.body);
 
     res.status(400).json({
@@ -39,10 +33,12 @@ const updateTagOfQuestion = async (req, res, next) => {
 };
 
 const deleteTagOfQuestion = async (req, res, next) => {
+  //ส่ง questionId มาเป็นอาเรย์ของ id ที่ต้องดารลบ
+  const { deleteRows } = req.body;
   try {
     await db.QuestionTag.destroy({
       where: {
-        questionTagId: req.body.questionTagId,
+        questionTagId: deleteRows,
       },
     });
 
