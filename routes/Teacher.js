@@ -9,6 +9,7 @@ const questionNestedRoutes = require("./Question");
 const answerNestedRoutes = require("./Answer");
 const choiceNestedRoutes = require("./Choice");
 const subjectNestedRoutes = require("./Subject");
+const questionTagNestedRoutes = require("./QuestionTag");
 const tagNestedRoutes = require("./Tag");
 
 const auth = passport.authenticate("teacher-jwt", { session: false });
@@ -29,5 +30,6 @@ router.use("/choice", choiceNestedRoutes);
 router.use("/answer", answerNestedRoutes);
 router.use("/subject", subjectNestedRoutes);
 router.use("/tag", tagNestedRoutes);
+router.use("/question-tag", questionTagNestedRoutes);
 
 module.exports = router;
