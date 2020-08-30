@@ -16,7 +16,7 @@ const addQuestionToExam = async (req, res, next) => {
   }
 };
 
-const deleteQuestionToExam = async (req, res, next) => {
+const deleteQuestionInExam = async (req, res, next) => {
   //ส่ง questionId มาเป็นอาเรย์ของ id ที่ต้องดารลบ
   const { deleteRows } = req.body;
   try {
@@ -37,5 +37,5 @@ const deleteQuestionToExam = async (req, res, next) => {
 
 module.exports = {
   addQuestionToExam,
-  deleteQuestionToExam,
+  deleteQuestionInExam,
 };
