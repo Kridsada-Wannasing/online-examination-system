@@ -11,6 +11,7 @@ const examLogRoutes = require("./routes/ExamLog");
 const scoreRoutes = require("./routes/Score");
 const questionRoutes = require("./routes/Question");
 const examRoutes = require("./routes/Exam");
+const answerRoutes = require("./routes/Answer");
 
 require("./config/passport/Student");
 
@@ -22,6 +23,7 @@ app.use("/log", examLogRoutes);
 app.use("/score", scoreRoutes);
 app.use("/question", questionRoutes);
 app.use("/exam", examRoutes);
+app.use("/answer", answerRoutes);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan());
