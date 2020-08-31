@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const scoreController = require("../controllers/Score");
+const scoreControllers = require("../controllers/Score");
 
-router.post("/create-score", scoreController.createScore);
-router.get("/all", scoreController.getAllScore);
-router.get("/:scoreId", scoreController.getScore);
-router.patch("/edit-score/:scoreId", scoreController.updateScore);
-router.delete("/delete-score/:scoreId", scoreController.deleteScore);
+router.post("/", scoreControllers.createScore);
+router.get("/", scoreControllers.getAllScore);
+router.get("/:scoreId", scoreControllers.getScore);
+router.patch("/:scoreId", scoreControllers.updateScore);
+router.delete("/:scoreId", scoreControllers.deleteScore);
 
 module.exports = router;
