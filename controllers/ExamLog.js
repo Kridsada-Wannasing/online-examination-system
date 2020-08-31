@@ -27,11 +27,11 @@ const createExamLog = async (req, res, next) => {
 
 const getAllExamLog = async (req, res, next) => {
   const allExamLog = await db.ExamLog.findAll({
-    where: {
-      examId: req.params.examId,
-      //passport ของ student เก็บใน req.user.studentId
-      studentId: req.user.studentId,
-    },
+    // where: {
+    //   examId: req.params.examId,
+    //   //passport ของ student เก็บใน req.user.studentId
+    //   studentId: req.user.studentId,
+    // },
   });
 
   res.status(200).json({
@@ -87,7 +87,7 @@ const deleteExamLog = async (req, res, next) => {
 module.exports = {
   createExamLog,
   getAllExamLog,
-  getExamLog,
+  // getExamLog,
   updateExamLog,
   deleteExamLog,
 };
