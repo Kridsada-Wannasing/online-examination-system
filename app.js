@@ -9,6 +9,7 @@ const app = express();
 const studentRoutes = require("./routes/Student");
 const examLogRoutes = require("./routes/ExamLog");
 const scoreRoutes = require("./routes/Score");
+const questionRoutes = require("./routes/Question");
 
 require("./config/passport/Student");
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/student", studentRoutes);
 app.use("/log", examLogRoutes);
 app.use("/score", scoreRoutes);
+app.use("/question", questionRoutes);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan());
