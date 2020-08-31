@@ -12,8 +12,8 @@ const mapArrayOfObject = function (arr, examId, questionId, studentId) {
 const createExamLog = async (req, res, next) => {
   const result = mapArrayOfObject(
     req.body,
-    req.params.examId,
-    req.params.questionId,
+    req.body.examId,
+    req.body.questionId,
     req.user.studentId
   );
 
