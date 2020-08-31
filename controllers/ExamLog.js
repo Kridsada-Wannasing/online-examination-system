@@ -13,8 +13,8 @@ const createExamLog = async (req, res, next) => {
   //map req.body ที่ส่งมาจากหน้าบ้าน ด้วย id ของชุดข้อสอบ คำถามข้อนั้น และผู้เข้าสอบ
   const result = mapArrayOfObject(
     req.body,
-    req.params.examId,
-    req.params.questionId,
+    req.body.examId,
+    req.body.questionId,
     req.user.studentId
   );
 
