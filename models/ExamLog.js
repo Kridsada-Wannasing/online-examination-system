@@ -3,26 +3,18 @@ module.exports = (sequelize, dataTypes) => {
     "ExamLog",
     {
       examLogId: {
-        type: dataTypes.INTEGER(8),
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
       },
-      answer1: {
-        type: dataTypes.STRING(50),
-      },
-      answer2: {
-        type: dataTypes.STRING(50),
-      },
-      answer3: {
-        type: dataTypes.STRING(50),
-      },
-      answer4: {
-        type: dataTypes.STRING(50),
-      },
-      answer5: {
-        type: dataTypes.STRING(50),
+      answer: {
+        type: dataTypes.STRING,
       },
     },
     {
-      tableName: "exams",
+      tableName: "exam_logs",
+      underscored: false,
     }
   );
 
@@ -33,11 +25,8 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Student, {
       foreignKey: "studentId",
     });
-    model.belongsTo(models.ObjectiveQuestion, {
-      foreignKey: "objectiveQuestionId",
-    });
-    model.belongsTo(models.SubjectiveQuestion, {
-      foreignKey: "subjectiveQuestionId",
+    model.belongsTo(models.Question, {
+      foreignKey: "questionId",
     });
   };
 
