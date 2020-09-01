@@ -4,7 +4,7 @@ const router = express.Router();
 const examLogControllers = require("../controllers/ExamLog");
 
 router.post("/:examId/:questionId", examLogControllers.createExamLog);
-router.get("/", examLogControllers.getAllExamLog);
+router.get("/:examId", examLogControllers.getAllExamLog);
 // router.get("/:examLogId", examLogControllers.getExamLog);
 
 // มี 2 middleware คือลบอันเก่าทิ้งแล้วสร้างใหม่

@@ -19,8 +19,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan());
 }
 
-app.use("/exam-log", examLogRoute);
-
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
     console.log(`App running on port ${process.env.PORT}`);
