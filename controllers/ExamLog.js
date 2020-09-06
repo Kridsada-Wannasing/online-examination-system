@@ -41,24 +41,6 @@ const getAllExamLog = async (req, res, next) => {
   });
 };
 
-// const getExamLog = async (req, res, next) => {
-//   const target = await db.ExamLog.findOne({
-//     where: { examLogId: req.params.examLogId },
-//   });
-
-//   if (!target) {
-//     res.status(404).json({
-//       status: "fail",
-//       message: "ยังไม่มีการตอบในข้อนี้",
-//     });
-//   }
-
-//   res.status(200).json({
-//     status: "success",
-//     target,
-//   });
-// };
-
 const updateExamLog = async (req, res, next) => {
   await db.ExamLog.destroy({
     where: {
