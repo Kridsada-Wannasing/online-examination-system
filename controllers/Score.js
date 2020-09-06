@@ -2,28 +2,13 @@ const db = require("../models");
 
 const createScore = async (req, res, next) => {
   try {
-    const yourExamLog = await db.Examlog.findAll({
-      attributes: ["questionId", "answer"],
-      where: {
-        studentId: req.user.studentId,
-        examId: req.params.examId,
-      },
-    });
-
-    const unique = [...new Set(yourExamLog.map((item) => item.questionId))];
-
-    const collectAnswer = await db.Question.findAll({
-      where: unique,
-      include: [db.Answer],
-    });
-
-    //const newScore = await db.Score.create(req.body);
+    const { examId } = req.body;
+    const newScore = await db.Score.create({ score: req.score, examId });
 
     res.status(201).json({
       status: "success",
       message: "สร้างคะแนนสำเร็จ",
-      yourExamLog,
-      collectAnswer,
+      newScore,
     });
   } catch (error) {
     res.status(400).json({
