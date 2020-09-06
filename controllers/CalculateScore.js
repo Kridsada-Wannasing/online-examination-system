@@ -10,11 +10,16 @@ module.exports = async (req, res, next) => {
       },
     });
 
-    const unique = [...new Set(yourExamLog.map((item) => item.questionId))];
+    //เพื่อนำไป query เอาคำตอบตามแต่ละ questionId
+    const uniqueQuestionId = [
+      ...new Set(getYourAnswer.map((item) => item.questionId)),
+    ];
 
     const getCorrectAnswer = await db.Answer.findAll({
       attributes: ["questionId", "answer", "score"],
-      where: unique,
+      where: {
+        questionId: uniqueQuestionId,
+      },
     });
 
     //จัดรูปจาก arr => obj
