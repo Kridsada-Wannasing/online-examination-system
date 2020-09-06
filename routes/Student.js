@@ -1,0 +1,27 @@
+const express = require("express");
+const router = express.Router();
+const passport = require("passport");
+
+const studentControllers = require("../controllers/Student");
+
+const examLogNestedRoutes = require("../routes/ExamLog");
+const scoreNestedRoutes = require("../routes/Score");
+const questionNestedRoutes = require("../routes/Question");
+const examNestedRoutes = require("../routes/Exam");
+const answerNestedRoutes = require("../routes/Answer");
+
+const auth = passport.authenticate("student-jwt", { session: false });
+
+router.post("/login", studentControllers.login);
+
+router.use(auth);
+
+router.get("/me", auth, studentControllers.getMe);
+
+router.use("/exam-log", examLogNestedRoutes);
+router.use("/score", scoreNestedRoutes);
+router.use("/question", questionNestedRoutes);
+router.use("/exam", examNestedRoutes);
+router.use("/answer", answerNestedRoutes);
+
+module.exports = router;
