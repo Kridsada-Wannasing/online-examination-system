@@ -3,7 +3,11 @@ const db = require("../models");
 const createScore = async (req, res, next) => {
   try {
     const { examId } = req.body;
-    const newScore = await db.Score.create({ score: req.score, examId });
+    const newScore = await db.Score.create({
+      studentId: req.user.studentId,
+      score: req.score,
+      examId,
+    });
 
     res.status(201).json({
       status: "success",
