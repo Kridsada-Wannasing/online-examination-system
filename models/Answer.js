@@ -11,6 +11,9 @@ module.exports = (sequelize, dataTypes) => {
       answer: {
         type: dataTypes.STRING(255),
       },
+      score: {
+        type: dataTypes.INTEGER(3),
+      },
     },
     {
       tableName: "answers",

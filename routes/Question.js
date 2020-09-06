@@ -1,12 +1,20 @@
 const express = require("express");
 const router = express.Router();
 
-const questionController = require("../controllers/Question");
+// const Upload = require("../utils/Upload");
 
-router.get("/", questionController.getAllQuestion);
-router.get("/:questionId", questionController.getQuestion);
-router.post("/", questionController.createQuestion);
-router.patch("/:questionId", questionController.updateQuestion);
-router.delete("/:questionId", questionController.deleteQuestion);
+const questionControllers = require("../controllers/Question");
+// const imageControllers = require("../controllers/Image");
+
+router.get("/", questionControllers.getAllQuestion);
+router.get("/:questionId", questionControllers.getQuestion);
+// router.post(
+//   "/",
+//   Upload.single("image"),
+//   questionControllers.createQuestion,
+//   imageControllers.uploadImage
+// );
+router.patch("/:questionId", questionControllers.updateQuestion);
+router.delete("/:questionId", questionControllers.deleteQuestion);
 
 module.exports = router;

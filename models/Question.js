@@ -31,12 +31,12 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.Answer, {
       foreignKey: "questionId",
     });
-    model.hasMany(models.Choice, {
-      foreignKey: "questionId",
-    });
-    model.hasMany(models.QuestionTag, {
-      foreignKey: "questionId",
-    });
+    // model.hasMany(models.Choice, {
+    //   foreignKey: "questionId",
+    // });
+    // model.hasMany(models.QuestionTag, {
+    //   foreignKey: "questionId",
+    // });
   };
 
   return model;

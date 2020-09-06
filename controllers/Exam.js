@@ -1,154 +1,133 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const FilterObject = require("../utils/FilterObject");
 
-const mapArrayOfObject = function (arrOfObj, id) {
-  return arrOfObj.map((obj) => ({
-    questionId: id,
-    ...obj,
-  }));
+const createExam = async (req, res, next) => {
+  try {
+    const newExam = await db.Exam.create({
+      subjectId: req.body.subjectId,
+      teacherId: req.user.teacherId,
+      ...req.body,
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: "สร้างชุดข้อสอบสำเร็จ",
+      newExam,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
-const createExamInSubject = async (req, res, next) => {
-  const newExam = await db.Exam.create({
-    subjectId: req.params.subjectId,
-    teacherId: req.user.teacherId,
-    ...req.body,
-  });
+const duplicateExam = async (req, res, next) => {
+  try {
+    const newDuplicateExam = await db.Exam.create(req.body);
 
-  res.status(201).json({
-    status: "success",
-    message: "สร้างชุดข้อสอบสำเร็จ",
-    newExam,
-  });
-};
-
-const addQuestionInExam = async (req, res, next) => {
-  const newQuestion = await db.Question.create({
-    questionType: req.body.questionType,
-    question: req.body.question,
-    level: req.body.level,
-  });
-  await db.QuestionExam.create({
-    examId: req.params.examId,
-    questionId: newQuestion.questionId,
-  });
-
-  let choice = mapArrayOfObject(req.body.choice, newQuestion.questionId);
-  let tag = mapArrayOfObject(req.body.tag, newQuestion.questionId);
-  let answer = mapArrayOfObject(req.body.answer, newQuestion.questionId);
-
-  choice = await db.Choice.bulkCreate(choice);
-  tag = await db.QuestionTag.bulkCreate(tag);
-  answer = await db.Answer.bulkCreate(answer);
-
-  res.status(201).json({
-    status: "success",
-    message: "สร้างคำถามเรียบร้อย",
-    newQuestion,
-    choice,
-    tag,
-    answer,
-  });
+    res.status(200).json({
+      status: "success",
+      newDuplicateExam,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getAllExam = async (req, res, next) => {
-  const allExam = await db.Exam.findAll({
-    //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
-    where: {
-      [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
-    },
-  });
+  //ส่ง query string มาเพื่อ get ข้อมูลออกไปตาม field ที่กำหนด
+  const queryString = req.query;
+  try {
+    const allExam = await db.Exam.findAll({
+      //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
+      where: {
+        [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
+        ...queryString,
+      },
+    });
 
-  res.status(200).json({
-    status: "success",
-    allExam,
-  });
+    res.status(200).json({
+      status: "success",
+      allExam,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const getExam = async (req, res, next) => {
-  const target = await db.Exam.findOne({
-    where: { examId: req.params.examId },
-    include: {
-      model: db.QuestionExam,
+  try {
+    const target = await db.Exam.findOne({
+      where: { examId: req.params.examId },
       include: {
-        model: db.Question,
-        include: [
-          { model: db.Choice },
-          { model: db.Answer },
-          {
-            model: db.QuestionTag,
-            include: [db.Tag],
-          },
-        ],
+        model: db.QuestionExam,
+        include: {
+          model: db.Question,
+          include: [db.Choice],
+        },
       },
-    },
-  });
+    });
 
-  if (!target) {
-    res.status(404).json({
+    if (!target) res.status(404).send("หาข้อมูลไม่พบ");
+
+    res.status(200).json({
+      status: "success",
+      target,
+    });
+  } catch (error) {
+    res.status(400).json({
       status: "fail",
-      message: "ไม่มีชุดข้อสอบนี้",
+      error,
     });
   }
-
-  res.status(200).json({
-    status: "success",
-    target,
-  });
 };
 
 const updateExam = async (req, res, next) => {
-  await db.Exam.update(req.body, {
-    where: { examId: req.params.examId },
-  });
+  try {
+    const updatedExam = await db.Exam.update(req.body, {
+      where: { examId: req.params.examId },
+    });
 
-  res.status(200).json({
-    status: "succes",
-    message: "เปลี่ยนแปลงข้อมูลชุดข้อสอบนี้สำเร็จ",
-    updatedExam,
-  });
-};
-
-const editQuesitonInExam = async (req, res, next) => {
-  let editedFields = new FilterObject(req.body, req.body.allowedFields);
-  const updatedQuestion = await db.Question.update(editedFields, {
-    where: { questionId: req.params.questionId },
-  });
-
-  const updatedChoice = await db.Choice.update(
-    { choice: req.body.choice.choice },
-    {
-      where: { choiceId: req.params.choiceId },
-    }
-  );
-  const updatedTag = await db.QuestionTag.update(
-    { tagId: req.body.tag.tagId },
-    {
-      where: { questionTagId: req.params.questionTagId },
-    }
-  );
-
-  res.status(200).json({
-    status: "success",
-    message: "แก้ไขคำถามสำเร็จ",
-  });
+    res.status(200).json({
+      status: "succes",
+      message: "เปลี่ยนแปลงข้อมูลชุดข้อสอบนี้สำเร็จ",
+      updatedExam,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 const deleteExam = async (req, res, next) => {
-  await db.Exam.destroy({
-    where: { examId: req.params.examId },
-  });
+  try {
+    await db.Exam.destroy({
+      where: { examId: req.params.examId },
+    });
 
-  res.status(204).send();
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
 };
 
 module.exports = {
-  createExamInSubject,
-  addQuestionInExam,
+  createExam,
+  duplicateExam,
   getAllExam,
   getExam,
   updateExam,
-  editQuesitonInExam,
   deleteExam,
 };

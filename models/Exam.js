@@ -29,7 +29,6 @@ module.exports = (sequelize, dataTypes) => {
     },
     {
       tableName: "exams",
-      timestamps: false,
       underscored: false,
     }
   );
@@ -41,15 +40,15 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.ExamLog, {
       foreignKey: "examId",
     });
-    model.hasMany(models.Subject, {
-      foreignKey: "examId",
-    });
+    // model.belongsTo(models.Subject, {
+    //   foreignKey: "subjectId",
+    // });
     model.hasMany(models.Score, {
       foreignKey: "examId",
     });
-    model.belongsTo(models.Teacher, {
-      foreignKey: "teacherId",
-    });
+    // model.belongsTo(models.Teacher, {
+    //   foreignKey: "teacherId",
+    // });
   };
 
   return model;

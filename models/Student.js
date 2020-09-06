@@ -33,11 +33,11 @@ module.exports = (sequelize, dataTypes) => {
     }
   );
 
-  model.associate = (models) => {
-    model.hasMany(models.ExamLog, {
-      foreignKey: "studentId",
-    });
-  };
+  // model.associate = (models) => {
+  //   model.hasMany(models.ExamLog, {
+  //     foreignKey: "studentId",
+  //   });
+  // };
 
   return model;
 };

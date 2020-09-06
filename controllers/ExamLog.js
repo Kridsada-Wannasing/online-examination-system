@@ -88,7 +88,7 @@ const deleteExamLog = async (req, res, next) => {
 module.exports = {
   createExamLog,
   getAllExamLog,
-  getExamLog,
+  // getExamLog,
   updateExamLog,
   deleteExamLog,
 };
