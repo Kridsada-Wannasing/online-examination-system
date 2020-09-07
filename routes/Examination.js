@@ -8,6 +8,6 @@ router.get("/:examinationId", examinationControllers.getExamination);
 router.post("/", examinationControllers.createExamination);
 router.post("/:examinationId", examinationControllers.enterToExamination);
 router.patch("/:examinationId", examinationControllers.updateExamination);
-router.delete("/::examinationId", examinationControllers.cancelExamination);
+router.delete("/:examinationId", examinationControllers.cancelExamination);
 
 module.exports = router;
