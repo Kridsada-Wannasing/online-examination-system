@@ -23,9 +23,14 @@ const login = async (req, res, next) => {
         expiresIn: 3600,
       });
 
+      delete target.password;
+      delete target.createdAt;
+      delete target.updatedAt;
+
       res.status(200).json({
         message: "เข้าสู่ระบบสำเร็จ",
         token,
+        student: target,
       });
     } else res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
   }
