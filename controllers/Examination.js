@@ -55,14 +55,17 @@ const getExamination = async (req, res, next) => {
 const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
     const examinationsForInvitedStudent = await db.Meeting.findAll({
-      include: [db.Examination],
+      include: {
+        model: db.Examination,
+        required: true,
+      },
       where: {
         [Op.and]: [
-          { studentId: req.user.studentId },
           sequelize.where(
             sequelize.fn("DATE", sequelize.col("startDate")),
             sequelize.literal("CURRENT_DATE")
           ),
+          { studentId: req.user.studentId },
         ],
       },
     });
