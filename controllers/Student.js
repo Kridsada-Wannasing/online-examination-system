@@ -3,6 +3,53 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/Email")
 
+function generateRandomPassword() {
+  return Math.random().toString(32).substr(2, 10)
+}
+
+const registerOne = async (req, res, next) => {
+  const { studentId } = req.body;
+  const target = await db.Student.findOne({ where: { studentId: studentId } });
+
+  if (target) res.status(400).json({ message: "บัญชีนี้ถูกสร้างไว้แล้ว" });
+
+  const randomPassword = generateRandomPassword();
+  const newAccount = await db.Student.create({
+    ...req.body,
+    password: randomPassword,
+  });
+
+  res.status(201).json({
+    status: "success",
+    message: "บัญชีนี้ถูกสร้างเรียบร้อย",
+    account: {
+      firstName: newAccount.firstName,
+      lastName: newAccount.lastName,
+      email: newAccount.email,
+      faculty: newAccount.faculty,
+      department: newAccount.department,
+    },
+  });
+};
+
+const registerMany = async (req, res, next) => {
+  const allStudent = await db.Student.findAll();
+  let target = differenceBy(req.body, allStudent, "studentId");
+
+  target = target.map((obj) => ({
+    ...obj,
+    password: generateRandomPassword(),
+  }));
+
+  const newAccount = await db.Student.bulkCreate(target);
+
+  res.status(201).json({
+    status: "success",
+    message: "บัญชีนี้ถูกสร้างเรียบร้อย",
+    newAccount,
+  });
+};
+
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   const target = await db.Student.findOne({ where: { email: email } });
@@ -110,6 +157,8 @@ const forgotPassword = (req, res, next) => {
 };
 
 module.exports = {
+  registerOne,
+  registerMany,
   login,
   getMe,
   updateMe,
