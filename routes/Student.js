@@ -14,10 +14,13 @@ const examinationNestedRoutes = require("../routes/Examination");
 const auth = passport.authenticate("student-jwt", { session: false });
 
 router.post("/login", studentControllers.login);
+router.post("/forgotPassword", studentControllers.forgotPassword);
 
 router.use(auth);
 
-router.get("/me", auth, studentControllers.getMe);
+router.get("/me", studentControllers.getMe);
+router.patch("/updateMe", studentControllers.updateMe);
+router.patch("/updatePassword", studentControllers.updatePassword);
 
 router.use("/exam-log", examLogNestedRoutes);
 router.use("/score", scoreNestedRoutes);
