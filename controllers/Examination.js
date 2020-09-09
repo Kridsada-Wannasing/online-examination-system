@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Op } = require("sequelize/types");
+const { Op } = require("sequelize");
 
 const createExamination = async (req, res, next) => {
   try {
@@ -54,9 +54,9 @@ const getExamination = async (req, res, next) => {
 
 const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
-    const examinationsForInvitedStudent = await db.Meeting.findAll({
+    const examinationsForInvitedStudent = await db.Examination.findAll({
       include: {
-        model: db.Examination,
+        model: db.Meeting,
         required: true,
       },
       where: {

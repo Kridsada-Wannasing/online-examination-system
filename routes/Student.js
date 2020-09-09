@@ -9,6 +9,7 @@ const scoreNestedRoutes = require("../routes/Score");
 const questionNestedRoutes = require("../routes/Question");
 const examNestedRoutes = require("../routes/Exam");
 const answerNestedRoutes = require("../routes/Answer");
+const examinationNestedRoutes = require("../routes/Examination");
 
 const auth = passport.authenticate("student-jwt", { session: false });
 
@@ -23,5 +24,6 @@ router.use("/score", scoreNestedRoutes);
 router.use("/question", questionNestedRoutes);
 router.use("/exam", examNestedRoutes);
 router.use("/answer", answerNestedRoutes);
+router.use("/examination", examinationNestedRoutes);
 
 module.exports = router;
