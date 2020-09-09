@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize/types");
 
 const createExamination = async (req, res, next) => {
   try {
@@ -51,26 +52,42 @@ const getExamination = async (req, res, next) => {
   }
 };
 
-const enterToExamination = async (req, res, next) => {
+const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
-    const { password } = req.body;
-
-    const target = db.Meeting.findOne({
+    const examinationsForInvitedStudent = await db.Meeting.findAll({
+      include: {
+        model: db.Examination,
+        required: true,
+      },
       where: {
-        meetingId: req.body.meetingId,
-        studentId: req.body.studentId,
+        [Op.and]: [
+          sequelize.where(
+            sequelize.fn("DATE", sequelize.col("startDate")),
+            sequelize.literal("CURRENT_DATE")
+          ),
+          { studentId: req.user.studentId },
+        ],
       },
     });
 
-    if (!target) {
-      res.status(400).json({
-        status: "fail",
-        message: "ท่านไม่ได้รับอนุญาตให้เข้าห้องสอบนี้",
-      });
-    }
+    res.status(200).json({
+      status: "success",
+      examinationsForInvitedStudent,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const enterToExamination = async (req, res, next) => {
+  try {
+    const { password, examinationId } = req.body;
 
     const getExamination = db.Examination.findOne({
-      where: { examinationId: req.body.examinationId },
+      where: { examinationId: examinationId },
     });
 
     if (getExamination) {
@@ -86,7 +103,7 @@ const enterToExamination = async (req, res, next) => {
       ) {
         res.status(200).json({
           status: "success",
-          allowExamination: true,
+          examId: getExamination.examId,
         });
       }
     }
@@ -136,6 +153,7 @@ module.exports = {
   createExamination,
   getAllExaminations,
   getExamination,
+  getExaminationsForInvitedStudent,
   enterToExamination,
   updateExamination,
   cancelExamination,
