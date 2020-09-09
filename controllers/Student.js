@@ -20,12 +20,20 @@ const login = async (req, res, next) => {
         studentId: target.studentId,
       };
       const token = jwt.sign(payload, process.env.SECRET_OR_KEY, {
-        expiresIn: 3600,
+        expiresIn: "7d",
       });
 
       res.status(200).json({
         message: "เข้าสู่ระบบสำเร็จ",
         token,
+        student: {
+          studentId: target.studentId,
+          firstName: target.firstName,
+          lastName: target.lastName,
+          email: target.email,
+          faculty: target.faculty,
+          department: target.department,
+        },
       });
     } else res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
   }
