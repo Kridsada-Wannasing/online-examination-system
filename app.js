@@ -10,7 +10,6 @@ const studentRoutes = require("./routes/Student");
 const teacherRoutes = require("./routes/Teacher");
 const cors = require("cors");
 
-require("./config/passport/Student");
 require("./config/passport/Teacher");
 
 app.use(cors());

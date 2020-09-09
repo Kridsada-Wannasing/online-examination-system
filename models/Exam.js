@@ -40,15 +40,21 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.ExamLog, {
       foreignKey: "examId",
     });
-    // model.belongsTo(models.Subject, {
-    //   foreignKey: "subjectId",
-    // });
     model.hasMany(models.Score, {
       foreignKey: "examId",
     });
-    // model.belongsTo(models.Teacher, {
-    //   foreignKey: "teacherId",
-    // });
+    model.belongsTo(models.Teacher, {
+      foreignKey: "teacherId",
+    });
+    model.hasMany(models.ExamLog, {
+      foreignKey: "examId",
+    });
+    model.belongsTo(models.Subject, {
+      foreignKey: "subjectId",
+    });
+    model.hasMany(models.Examination, {
+      foreignKey: "examinationId",
+    });
   };
 
   return model;

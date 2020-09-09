@@ -1,26 +1,25 @@
 module.exports = (sequelize, dataTypes) => {
   const model = sequelize.define(
-    "QuestionTag",
+    "Subject",
     {
-      questionTagId: {
+      subjectId: {
         type: dataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true,
+      },
+      subjectName: {
+        type: dataTypes.STRING(50),
       },
     },
     {
-      tableName: "question_tags",
+      tableName: "subjects",
       underscored: false,
     }
   );
 
   model.associate = (models) => {
-    model.belongsTo(models.Question, {
-      foreignKey: "questionId",
-    });
-    model.belongsTo(models.Tag, {
-      foreignKey: "tagId",
+    model.hasMany(models.Exam, {
+      foreignKey: "subjectId",
     });
   };
 

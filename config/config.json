@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "LE~J@yQVNr2S/d3",
-    "database": "st",
+    "database": "cpe_database_project",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
