@@ -2,40 +2,63 @@ const db = require("../models");
 const differenceBy = require("lodash/differenceBy");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const FilterObject = require("../utils/FilterObject");
+const Email = require("../utils/Email")
 
-const passwordGenerator = (params) => {
-  params = String(params).substring(9);
-  params = bcryptjs.hashSync(params, 12);
-  return params;
-};
+function hashedPassword(password) {
+  return bcryptjs.hashSync(password, 12);
+}
+
+function generateRandomPassword() {
+  return Math.random().toString(32).substr(2, 10)
+}
 
 const registerOne = async (req, res, next) => {
-  const { teacherId } = req.body;
-  const target = await db.Teacher.findOne({ where: { teacherId: teacherId } });
+  const { email } = req.body;
+  const target = await db.Teacher.findOne({ where: { email: email } });
 
-  if (target) res.status(400).json({ message: "บัญชีนี้ถูกสร้างไว้แล้ว" });
+  if (target) res.status(400).send("บัญชีนี้ถูกสร้างไว้แล้ว");
+
+  const randomPassword = generateRandomPassword()
 
   const newAccount = await db.Teacher.create({
     ...req.body,
-    password: passwordGenerator(teacherId),
+    password: hashedPassword(randomPassword),
   });
+
+  const teacher = {
+    teacherId: newAccount.teacherId,
+    firstName: newAccount.firstName,
+    lastName: newAccount.lastName,
+    email: newAccount.email,
+    password: randomPassword,
+    faculty: newAccount.faculty,
+    department: newAccount.department,
+  }
+
+  const url = `${req.protocol}://${req.get("host")}/`;
+  await new Email(teacher, url).sendWelcome();
 
   res.status(201).json({
     status: "success",
     message: "บัญชีนี้ถูกสร้างเรียบร้อย",
-    account: newAccount,
+    teacher
   });
 };
 
 const registerMany = async (req, res, next) => {
-  const allStudent = await db.Teacher.findAll();
-  let target = differenceBy(req.body, allStudent, "teacherId");
+  const allTeacher = await db.Teacher.findAll();
+  let target = differenceBy(req.body, allTeacher, "email");
 
-  target = target.map((obj) => ({
-    ...obj,
-    password: passwordGenerator(obj.teacherId),
-  }));
+  let newTeacher = [];
+
+  target = target.map((obj) => {
+    const randomPassword = generateRandomPassword()
+    newTeacher.push({...obj,password:randomPassword})
+    return {...obj,password:hashedPassword(randomPassword)}
+  });
+
+  const url = `${req.protocol}://${req.get("host")}/`;
+  newTeacher.map((teacher) => await new Email(teacher, url).sendWelcome());
 
   const newAccount = await db.Teacher.bulkCreate(target);
 
@@ -77,21 +100,23 @@ const login = async (req, res, next) => {
   }
 };
 
-const getMe = (req, res, next) => {
-  res.status(200).json(req.user);
-};
-
 const updateMe = (req, res, next) => {
   try {
-    const filteredBody = new FilterObject(req.body, "username", "email");
-    const updatedAccount = db.Teacher.update(filteredBody, {
+    const updatedAccount = db.Teacher.update(req.body, {
       where: { teacherId: req.user.teacherId },
     });
 
     res.status(204).json({
       status: "success",
       message: "อัพเดทข้อมูลผู้ใช้สำเร็จ",
-      updatedAccount,
+      teacher: {
+        teacherId: updatedAccount.teacherId,
+        firstName: updatedAccount.firstName,
+        lastName: updatedAccount.lastName,
+        email: updatedAccount.email,
+        faculty: updatedAccount.faculty,
+        department: updatedAccount.department,
+      },
     });
   } catch (error) {
     res.status(400).json({
@@ -101,10 +126,64 @@ const updateMe = (req, res, next) => {
   }
 };
 
+const updatePassword = (req, res, next) => {
+  const { password } = req.body
+  try {
+    const updatedPassword = hashedPassword(password);
+
+    await db.Teacher.update({ password: updatedPassword },{
+      where: { teacherId: req.user.teacherId },
+    })
+
+    res.status(200).json({
+      status: "success",
+      message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ"
+    })
+
+  } catch (error) {
+    res.status(400).json({ 
+      status:"fail",
+      error
+    });
+  }
+};
+
+const forgotPassword = (req, res, next) => {
+  const { email } = req.body
+  try {
+    const target = await db.Teacher.findOne({
+      where: { email: email },
+    })
+
+    if(!target) throw false
+
+    const randomPassword = generateRandomPassword()
+    const hashedPassword = hashedPassword(randomPassword)
+
+    await db.Teacher.update({ password: hashedPassword },{
+      where: { teacherId: req.user.teacherId },
+    })
+
+    const student = req.user
+    const url = `${req.protocol}://${req.get("host")}/`;
+    await new Email(student, url).sendForgotPassword();
+
+    res.status(200).json({
+      status: "success",
+      message: "รหัสผ่านถูกส่งไปยังอีเมลแล้ว"
+    })
+
+  } catch (error) {
+    if(!error) res.status(404).send("อีเมลไม่ถูกต้อง")
+  }
+};
+
 module.exports = {
   registerOne,
   registerMany,
   login,
   getMe,
   updateMe,
+  updatePassword,
+  forgotPassword
 };
