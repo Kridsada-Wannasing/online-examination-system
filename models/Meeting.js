@@ -12,15 +12,12 @@ module.exports = (sequelize, dataTypes) => {
   });
 
   model.associate = (models) => {
-    model.belongsTo(models.Exam, {
-      foreignKey: "examId",
-    });
     model.belongsTo(models.Teacher, {
       foreignKey: "teacherId",
     });
-    // model.belongsTo(models.Section, {
-    //   foreignKey: "sectionId",
-    // });
+    model.belongsTo(models.Student, {
+      foreignKey: "studentId",
+    });
   };
 
   return model;

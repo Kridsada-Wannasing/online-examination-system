@@ -4,7 +4,7 @@ const createMeeting = async (req, res, next) => {
   try {
     const newMeeting = await db.Meeting.create({
       ...req.body,
-      teacherId: req.user,
+      teacherId: req.user.teacherId,
     });
 
     res.status(201).json({
