@@ -3,6 +3,10 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/Email")
 
+function hashedPassword(password) {
+  return bcryptjs.hashSync(password, 12);
+}
+
 function generateRandomPassword() {
   return Math.random().toString(32).substr(2, 10)
 }
@@ -14,21 +18,33 @@ const registerOne = async (req, res, next) => {
   if (target) res.status(400).json({ message: "บัญชีนี้ถูกสร้างไว้แล้ว" });
 
   const randomPassword = generateRandomPassword();
+
   const newAccount = await db.Student.create({
     ...req.body,
-    password: randomPassword,
+    password: hashedPassword(randomPassword),
   });
+
+  let student = {
+    studentId: newAccount.studentId,
+    firstName: newAccount.firstName,
+    lastName: newAccount.lastName,
+    email: newAccount.email,
+    password: randomPassword,
+    faculty: newAccount.faculty,
+    department: newAccount.department,
+  }
+
+  const url = `${req.protocol}://${req.get("host")}/student`;
+  await new Email(student, url).sendWelcome();
 
   res.status(201).json({
     status: "success",
     message: "บัญชีนี้ถูกสร้างเรียบร้อย",
-    account: {
-      firstName: newAccount.firstName,
-      lastName: newAccount.lastName,
-      email: newAccount.email,
-      faculty: newAccount.faculty,
-      department: newAccount.department,
-    },
+    student: {
+      studentId: student.studentId,
+      firstName: student.firstName,
+      lastName: student.lastName,
+    }
   });
 };
 
@@ -36,10 +52,15 @@ const registerMany = async (req, res, next) => {
   const allStudent = await db.Student.findAll();
   let target = differenceBy(req.body, allStudent, "studentId");
 
-  target = target.map((obj) => ({
-    ...obj,
-    password: generateRandomPassword(),
-  }));
+  const url = `${req.protocol}://${req.get("host")}/student`;
+
+  target = target.map((obj) => {
+    const randomPassword = generateRandomPassword()
+    const newStudent = { ...obj, password: randomPassword }
+    await new Email(newStudent, url).sendWelcome();
+
+    return {...obj,password:hashedPassword(randomPassword)}
+  });
 
   const newAccount = await db.Student.bulkCreate(target);
 
@@ -106,11 +127,18 @@ const updateMe = (req, res, next) => {
 };
 
 const updatePassword = (req, res, next) => {
-  const { password } = req.body
+  const { oldPassword, candidateNewPassword } = req.body
   try {
-    const updatePassword = bcryptjs.hashSync(password, target.password);
+    const target = await db.Student.findOne({ where: { studentId: req.user.studentId } })
 
-    const target = await db.Student.update({ password: updatePassword },{
+    const isPasswordMatch = bcryptjs.compareSync(oldPassword, target.password);
+    if(!isPasswordMatch) {
+      throw "รหัสผ่านเก่าผิด"
+    }
+
+    const newPassword = bcryptjs.hashSync(candidateNewPassword, 12);
+
+    await db.Student.update({ password: newPassword },{
       where: { studentId: req.user.studentId },
     })
 
@@ -143,7 +171,7 @@ const forgotPassword = (req, res, next) => {
     })
 
     const student = req.user
-    const url = `${req.protocol}://${req.get("host")}/`;
+    const url = `${req.protocol}://${req.get("host")}/student`;
     await new Email(student, url).sendForgotPassword();
 
     res.status(200).json({
