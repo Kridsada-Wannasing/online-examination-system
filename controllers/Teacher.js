@@ -35,7 +35,7 @@ const registerOne = async (req, res, next) => {
     department: newAccount.department,
   }
 
-  const url = `${req.protocol}://${req.get("host")}/`;
+  const url = `${req.protocol}://${req.get("host")}/teacher`;
   await new Email(teacher, url).sendWelcome();
 
   res.status(201).json({
@@ -57,10 +57,10 @@ const registerMany = async (req, res, next) => {
     return {...obj,password:hashedPassword(randomPassword)}
   });
 
-  const url = `${req.protocol}://${req.get("host")}/`;
-  newTeacher.map((teacher) => await new Email(teacher, url).sendWelcome());
-
   const newAccount = await db.Teacher.bulkCreate(target);
+
+  const url = `${req.protocol}://${req.get("host")}/teacher`;
+  newTeacher.map((teacher) => await new Email(teacher, url).sendWelcome());
 
   res.status(201).json({
     status: "success",
@@ -127,11 +127,18 @@ const updateMe = (req, res, next) => {
 };
 
 const updatePassword = (req, res, next) => {
-  const { password } = req.body
+  const { oldPassword, candidateNewPassword } = req.body
   try {
-    const updatedPassword = hashedPassword(password);
+    const target = await db.Teacher.findOne({ where: { teacherId: req.user.teacherId } })
 
-    await db.Teacher.update({ password: updatedPassword },{
+    const isPasswordMatch = bcryptjs.compareSync(oldPassword, target.password);
+    if(!isPasswordMatch) {
+      throw "รหัสผ่านเก่าผิด"
+    }
+
+    const newPassword = bcryptjs.hashSync(candidateNewPassword, 12);
+
+    await db.Teacher.update({ password: newPassword },{
       where: { teacherId: req.user.teacherId },
     })
 
@@ -165,7 +172,7 @@ const forgotPassword = (req, res, next) => {
     })
 
     const student = req.user
-    const url = `${req.protocol}://${req.get("host")}/`;
+    const url = `${req.protocol}://${req.get("host")}/teacher`;
     await new Email(student, url).sendForgotPassword();
 
     res.status(200).json({
