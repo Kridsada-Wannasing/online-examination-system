@@ -1,5 +1,29 @@
 const db = require("../models");
 
+const getQuestionInExam = async (req, res, next) => {
+  try {
+    const newQuestion = await db.QuestionExam.findAll({
+      where: {
+        examId: req.params.examId,
+      },
+      include: {
+        model: db.Question,
+        include: [db.Choice],
+      },
+    });
+
+    res.status(201).json({
+      status: "success",
+      newQuestion,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const addQuestionToExam = async (req, res, next) => {
   try {
     const newQuestion = await db.QuestionExam.bulkCreate(req.body);
@@ -38,4 +62,5 @@ const deleteQuestionInExam = async (req, res, next) => {
 module.exports = {
   addQuestionToExam,
   deleteQuestionInExam,
+  getQuestionInExam,
 };
