@@ -18,9 +18,9 @@ router.post("/forgotPassword", studentControllers.forgotPassword);
 
 router.use(auth);
 
-router.get("/me", studentControllers.getMe);
-router.patch("/updateMe", studentControllers.updateMe);
-router.patch("/updatePassword", studentControllers.updatePassword);
+router.patch("/me", studentControllers.updateMe);
+router.patch("/password", studentControllers.updatePassword);
+router.post("/forgot-password", studentControllers.forgotPassword);
 
 router.use("/exam-log", examLogNestedRoutes);
 router.use("/score", scoreNestedRoutes);
