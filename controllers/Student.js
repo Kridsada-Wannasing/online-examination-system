@@ -1,14 +1,14 @@
 const db = require("../models");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Email = require("../utils/Email")
+const Email = require("../utils/Email");
 
 function hashedPassword(password) {
   return bcryptjs.hashSync(password, 12);
 }
 
 function generateRandomPassword() {
-  return Math.random().toString(32).substr(2, 10)
+  return Math.random().toString(32).substr(2, 10);
 }
 
 const registerOne = async (req, res, next) => {
@@ -32,7 +32,7 @@ const registerOne = async (req, res, next) => {
     password: randomPassword,
     faculty: newAccount.faculty,
     department: newAccount.department,
-  }
+  };
 
   const url = `${req.protocol}://${req.get("host")}/student`;
   await new Email(student, url).sendWelcome();
@@ -44,7 +44,7 @@ const registerOne = async (req, res, next) => {
       studentId: student.studentId,
       firstName: student.firstName,
       lastName: student.lastName,
-    }
+    },
   });
 };
 
@@ -55,11 +55,11 @@ const registerMany = async (req, res, next) => {
   const url = `${req.protocol}://${req.get("host")}/student`;
 
   target = target.map((obj) => {
-    const randomPassword = generateRandomPassword()
-    const newStudent = { ...obj, password: randomPassword }
-    await new Email(newStudent, url).sendWelcome();
+    // const randomPassword = generateRandomPassword()
+    // const newStudent = { ...obj, password: randomPassword }
+    // await new Email(newStudent, url).sendWelcome();
 
-    return {...obj,password:hashedPassword(randomPassword)}
+    return { ...obj, password: hashedPassword(randomPassword) };
   });
 
   const newAccount = await db.Student.bulkCreate(target);
@@ -108,79 +108,85 @@ const login = async (req, res, next) => {
   }
 };
 
-const updateMe = (req, res, next) => {
+const updateMe = async (req, res, next) => {
   try {
     await db.Student.update(req.body, {
       where: { studentId: req.user.studentId },
-    })
+    });
 
     res.status(200).json({
       status: "success",
-      message: "เปลี่ยนแปลงข้อมูลบัญชีสำเร็จ"
-    })
+      message: "เปลี่ยนแปลงข้อมูลบัญชีสำเร็จ",
+    });
   } catch (error) {
-    res.status(400).json({ 
-      status:"fail",
-      error
+    res.status(400).json({
+      status: "fail",
+      error,
     });
   }
 };
 
-const updatePassword = (req, res, next) => {
-  const { oldPassword, candidateNewPassword } = req.body
+const updatePassword = async (req, res, next) => {
+  const { oldPassword, candidateNewPassword } = req.body;
   try {
-    const target = await db.Student.findOne({ where: { studentId: req.user.studentId } })
+    const target = await db.Student.findOne({
+      where: { studentId: req.user.studentId },
+    });
 
     const isPasswordMatch = bcryptjs.compareSync(oldPassword, target.password);
-    if(!isPasswordMatch) {
-      throw "รหัสผ่านเก่าผิด"
+    if (!isPasswordMatch) {
+      throw "รหัสผ่านเก่าผิด";
     }
 
     const newPassword = bcryptjs.hashSync(candidateNewPassword, 12);
 
-    await db.Student.update({ password: newPassword },{
-      where: { studentId: req.user.studentId },
-    })
+    await db.Student.update(
+      { password: newPassword },
+      {
+        where: { studentId: req.user.studentId },
+      }
+    );
 
     res.status(200).json({
       status: "success",
-      message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ"
-    })
-
+      message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ",
+    });
   } catch (error) {
-    res.status(400).json({ 
-      status:"fail",
-      error
+    res.status(400).json({
+      status: "fail",
+      error,
     });
   }
 };
 
-const forgotPassword = (req, res, next) => {
-  const { email } = req.body
+const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
   try {
     const target = await db.Student.findOne({
       where: { email: email },
-    })
+    });
 
-    if(!target) throw false
+    if (!target) throw false;
 
-    const randomPassword = Math.random().toString(32).substr(2, 10)
+    const randomPassword = Math.random().toString(32).substr(2, 10);
 
-    await db.Student.update({ password: randomPassword },{
-      where: { studentId: req.user.studentId },
-    })
+    await db.Student.update(
+      { password: randomPassword },
+      {
+        where: { studentId: req.user.studentId },
+      }
+    );
 
-    const student = req.user
+    const student = req.user;
     const url = `${req.protocol}://${req.get("host")}/student`;
     await new Email(student, url).sendForgotPassword();
 
     res.status(200).json({
       status: "success",
-      message: "รหัสผ่านถูกส่งไปยังอีเมลแล้ว"
-    })
-
+      message: "รหัสผ่านถูกส่งไปยังอีเมลแล้ว",
+    });
   } catch (error) {
-    if(!error) res.status(404).send("อีเมลไม่ถูกต้อง")
+    if (!error) res.status(404).send("อีเมลไม่ถูกต้อง");
   }
 };
 
@@ -188,7 +194,6 @@ module.exports = {
   registerOne,
   registerMany,
   login,
-  getMe,
   updateMe,
   updatePassword,
   forgotPassword,
