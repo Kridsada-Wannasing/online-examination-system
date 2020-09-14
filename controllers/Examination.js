@@ -1,5 +1,4 @@
 const db = require("../models");
-const { Op } = require("sequelize");
 
 const createExamination = async (req, res, next) => {
   try {
@@ -36,13 +35,13 @@ const getAllExaminations = async (req, res, next) => {
 
 const getExamination = async (req, res, next) => {
   try {
-    const allExamination = await db.Examination.findOne({
+    const examination = await db.Examination.findOne({
       where: { examinationId: req.params.examinationId },
     });
 
     res.status(201).json({
       status: "success",
-      allExamination,
+      examination,
     });
   } catch (error) {
     res.status(400).json({
@@ -55,26 +54,35 @@ const getExamination = async (req, res, next) => {
 const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
     const examinationsForInvitedStudent = await db.Examination.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
       include: {
         model: db.Meeting,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
         required: true,
-      },
-      where: {
-        [Op.and]: [
-          sequelize.where(
-            sequelize.fn("DATE", sequelize.col("startDate")),
-            sequelize.literal("CURRENT_DATE")
-          ),
-          { studentId: req.user.studentId },
-        ],
+        include: {
+          model: db.StudentMeeting,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          where: {
+            studentId: req.user.studentId,
+          },
+          required: true,
+        },
       },
     });
+
+    const examinationOfToday = examinationsForInvitedStudent.filter(
+      (examination) =>
+        examination.startDate.getDate() == new Date().getDate() &&
+        examination.startDate.getMonth() == new Date().getMonth() &&
+        examination.startDate.getFullYear() == new Date().getFullYear()
+    );
 
     res.status(200).json({
       status: "success",
       examinationsForInvitedStudent,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -83,34 +91,35 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
 };
 
 const enterToExamination = async (req, res, next) => {
+  console.log(req.headers);
+  const { password } = req.body;
+  console.log(password);
   try {
-    const { password, examinationId } = req.body;
-
-    const getExamination = db.Examination.findOne({
-      where: { examinationId: examinationId },
+    const getExamination = await db.Examination.findOne({
+      where: { examinationId: req.params.examinationId },
     });
 
     if (getExamination) {
-      let passwordIsCorrect = password.localeCompare(getExamination.password);
-      let currentTime = new Date().getTime();
-      let startTime = new Date(getExamination.startDate).getTime();
-      let endTime = new Date(getExamination.endDate).getTime();
+      let passwordIsCorrect = getExamination.password == password;
+      console.log(passwordIsCorrect);
 
-      if (
-        passwordIsCorrect == 0 &&
-        currentTime >= startTime &&
-        currentTime <= endTime
-      ) {
+      if (passwordIsCorrect) {
         res.status(200).json({
           status: "success",
           examId: getExamination.examId,
         });
+      } else {
+        res.status(400).json({
+          status: "fail",
+          message: "รหัสผ่านผิด",
+        });
       }
-    }
+    } else throw "ไม่มีห้องสอบนี้แล้ว";
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
-      message: "รหัสผ่านผิดหรืออาจหมดเวลาเข้าห้องสอบแล้ว",
+      error,
     });
   }
 };

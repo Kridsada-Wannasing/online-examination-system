@@ -4,7 +4,7 @@ const router = express.Router();
 const scoreControllers = require("../controllers/Score");
 const calculateScore = require("../controllers/CalculateScore");
 
-router.post("/", calculateScore, scoreControllers.createScore);
+router.post("/", scoreControllers.createScore);
 router.get("/", scoreControllers.getAllScore);
 router.get("/:scoreId", scoreControllers.getScore);
 router.patch("/:scoreId", scoreControllers.updateScore);

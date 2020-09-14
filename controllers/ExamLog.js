@@ -1,22 +1,15 @@
 const db = require("../models");
 
-const mapArrayOfObject = function (arr, examId, questionId, studentId) {
+const mapArrayOfObject = function (arr, studentId) {
   return arr.map((obj) => ({
     ...obj,
-    examId,
-    questionId,
     studentId,
   }));
 };
 
 const createExamLog = async (req, res, next) => {
   //map req.body ที่ส่งมาจากหน้าบ้าน ด้วย id ของชุดข้อสอบ คำถามข้อนั้น และผู้เข้าสอบ
-  const result = mapArrayOfObject(
-    req.body,
-    req.params.examId,
-    req.params.questionId,
-    req.user.studentId
-  );
+  const result = mapArrayOfObject(req.body, req.user.studentId);
 
   const newExamlog = await db.ExamLog.bulkCreate(result);
 
@@ -38,6 +31,22 @@ const getAllExamLog = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     allExamLog,
+  });
+};
+
+const getExamLog = async (req, res, next) => {
+  const examLog = await db.ExamLog.findAll({
+    where: {
+      examId: req.params.examId,
+      //passport ของ student เก็บใน req.user.studentId
+      studentId: req.user.studentId,
+      questionId: req.params.questionId,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    examLog,
   });
 };
 
@@ -70,7 +79,7 @@ const deleteExamLog = async (req, res, next) => {
 module.exports = {
   createExamLog,
   getAllExamLog,
-  // getExamLog,
+  getExamLog,
   updateExamLog,
   deleteExamLog,
 };

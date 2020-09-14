@@ -3,9 +3,9 @@ const router = express.Router();
 
 const examinationControllers = require("../controllers/Examination");
 
+router.get("/invited", examinationControllers.getExaminationsForInvitedStudent);
 router.get("/", examinationControllers.getAllExaminations);
 router.get("/:examinationId", examinationControllers.getExamination);
-router.get("/invited", examinationControllers.getExaminationsForInvitedStudent);
 router.post("/", examinationControllers.createExamination);
 router.post("/:examinationId", examinationControllers.enterToExamination);
 router.patch("/:examinationId", examinationControllers.updateExamination);

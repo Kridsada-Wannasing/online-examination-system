@@ -13,11 +13,15 @@ const createQuestion = async (req, res, next) => {
       questionId: newQuestion.questionId,
     });
 
-    res.status(201).json({
-      status: "success",
-      message: "สร้างคำถามเรียบร้อย",
-      newQuestion,
-    });
+    if (req.file) {
+      req.newQuestion = newQuestion;
+      next();
+    } else
+      res.status(201).json({
+        status: "success",
+        message: "สร้างคำถามสำเร็จ",
+        newQuestion,
+      });
   } catch (error) {
     res.status(400).json({
       status: "fail",

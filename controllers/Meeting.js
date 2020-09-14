@@ -3,14 +3,25 @@ const db = require("../models");
 const createMeeting = async (req, res, next) => {
   try {
     const newMeeting = await db.Meeting.create({
-      ...req.body,
+      examDate: req.body.examDate,
       teacherId: req.user.teacherId,
+      subjectId: req.body.subjectId,
+    });
+    const studentMeeting = await db.StudentMeeting.create({
+      studentId: req.body.studentId,
+      meetingId: newMeeting.meetingId,
     });
 
     res.status(201).json({
       status: "success",
       message: "สร้างการนัดหมายสำเร็จ",
-      newMeeting,
+      meeting: {
+        meetingId: newMeeting.meetingId,
+        startDate: newMeeting.startDate,
+        teacherId: newMeeting.teacherId,
+        studentId: studentMeeting.studentId,
+        subjectId: newMeeting.subjectId,
+      },
     });
   } catch (error) {
     res.status(400).json({

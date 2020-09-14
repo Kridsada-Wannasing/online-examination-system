@@ -2,21 +2,32 @@ const db = require("../models");
 
 const getQuestionInExam = async (req, res, next) => {
   try {
-    const newQuestion = await db.QuestionExam.findAll({
+    const questionInExam = await db.QuestionExam.findAll({
       where: {
         examId: req.params.examId,
       },
+    });
+
+    const uniqueQuestionId = [
+      ...new Set(questionInExam.map((item) => item.questionId)),
+    ];
+
+    const getQuestions = await db.Question.findAll({
+      where: {
+        questionId: uniqueQuestionId,
+      },
       include: {
-        model: db.Question,
-        include: [db.Choice],
+        model: db.Choice,
+        required: true,
       },
     });
 
     res.status(201).json({
       status: "success",
-      newQuestion,
+      getQuestions,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

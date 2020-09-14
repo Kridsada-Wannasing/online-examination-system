@@ -1,11 +1,41 @@
 const db = require("../models");
-
+const { Op } = require("sequelize");
 const createScore = async (req, res, next) => {
   try {
+    const sum = await db.Answer.sum(["score"]);
+
+    const calculateScore = await db.ExamLog.findAll({
+      attributes: ["questionId", "examId"],
+      where: {
+        studentId: req.user.studentId,
+        examId: req.body.examId,
+      },
+      include: {
+        model: db.Question,
+        required: true,
+        attributes: ["questionId"],
+        include: {
+          model: db.Answer,
+          required: true,
+          attributes: [
+            [db.sequelize.fn("SUM", db.sequelize.col("score")), "score"],
+          ],
+          where: {
+            answer: {
+              [Op.eq]: db.sequelize.col("ExamLog.answer"),
+            },
+          },
+        },
+      },
+    });
+
+    const score = Number(calculateScore[0].Question.Answers[0].score);
+
     const { examId } = req.body;
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
-      score: req.score,
+      score,
+      sum,
       examId,
     });
 
@@ -15,6 +45,7 @@ const createScore = async (req, res, next) => {
       newScore,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

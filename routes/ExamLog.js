@@ -3,13 +3,13 @@ const router = express.Router();
 
 const examLogControllers = require("../controllers/ExamLog");
 
-router.post("/:examId/:questionId", examLogControllers.createExamLog);
+router.post("/", examLogControllers.createExamLog);
 router.get("/:examId", examLogControllers.getAllExamLog);
-// router.get("/:examLogId", examLogControllers.getExamLog);
+router.get("/:examId/:questionId", examLogControllers.getExamLog);
 
 // มี 2 middleware คือลบอันเก่าทิ้งแล้วสร้างใหม่
 router.patch(
-  "/:examId/:questionId",
+  "/",
   examLogControllers.updateExamLog,
   examLogControllers.createExamLog
 );

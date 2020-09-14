@@ -11,6 +11,9 @@ module.exports = (sequelize, dataTypes) => {
       score: {
         type: dataTypes.INTEGER(3),
       },
+      sum: {
+        type: dataTypes.INTEGER(3),
+      },
     },
     {
       tableName: "scores",
