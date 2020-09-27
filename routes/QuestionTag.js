@@ -3,8 +3,9 @@ const router = express.Router();
 
 const questionTagControllers = require("../controllers/QuestionTag");
 
-router.post("/", questionTagControllers.addTagToQuestion);
-router.patch("/", questionTagControllers.updateTagOfQuestion);
-router.delete("/", questionTagControllers.deleteTagOfQuestion);
+router.get("/:questionId", questionTagControllers.getTagsInQuestion);
+router.post("/:questionId", questionTagControllers.addTagToQuestion);
+router.patch("/:questionId", questionTagControllers.updateTagOfQuestion);
+router.delete("/:questionId", questionTagControllers.deleteTagOfQuestion);
 
 module.exports = router;

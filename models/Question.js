@@ -37,6 +37,9 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.Choice, {
       foreignKey: "questionId",
     });
+    model.hasOne(models.Image, {
+      foreignKey: "questionId",
+    });
     // model.hasMany(models.QuestionTag, {
     //   foreignKey: "questionId",
     // });

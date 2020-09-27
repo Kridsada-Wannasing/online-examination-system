@@ -7,21 +7,22 @@ const createMeeting = async (req, res, next) => {
       teacherId: req.user.teacherId,
       subjectId: req.body.subjectId,
     });
-    const studentMeeting = await db.StudentMeeting.create({
-      studentId: req.body.studentId,
-      meetingId: newMeeting.meetingId,
-    });
+    // const studentMeeting = await db.StudentMeeting.create({
+    //   studentId: req.body.studentId,
+    //   meetingId: newMeeting.meetingId,
+    // });
 
     res.status(201).json({
       status: "success",
       message: "สร้างการนัดหมายสำเร็จ",
-      meeting: {
-        meetingId: newMeeting.meetingId,
-        startDate: newMeeting.startDate,
-        teacherId: newMeeting.teacherId,
-        studentId: studentMeeting.studentId,
-        subjectId: newMeeting.subjectId,
-      },
+      // meeting: {
+      //   meetingId: newMeeting.meetingId,
+      //   startDate: newMeeting.startDate,
+      //   teacherId: newMeeting.teacherId,
+      //   studentId: studentMeeting.studentId,
+      //   subjectId: newMeeting.subjectId,
+      // },
+      newMeeting,
     });
   } catch (error) {
     res.status(400).json({
@@ -33,7 +34,9 @@ const createMeeting = async (req, res, next) => {
 
 const getAllMeeting = async (req, res, next) => {
   try {
-    const allMeeting = await db.Meeting.findAll();
+    const allMeeting = await db.Meeting.findAll({
+      include: [db.Subject],
+    });
 
     res.status(200).json({
       status: "success",

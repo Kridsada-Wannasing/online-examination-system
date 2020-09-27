@@ -1,29 +1,33 @@
 const db = require("../models");
 const fs = require("fs");
+const path = require("path");
 
-const uploadImage = async (req, res, next) => {
-  const newQuestion = req.newQuestion;
+const getAllImages = async (req, res, next) => {
   try {
-    if (req.file == undefined) {
-      res.status(404).json({
-        status: "fail",
-        message: "ไม่พบไฟล์รูปภาพ",
-      });
-    }
+    const allImages = await db.Image.findAll();
 
-    const image = await db.Image.create({
-      questionId: newQuestion.questionId,
-      type: req.file.mimetype,
-      name: req.file.originalname,
-      path: `public/img/uploads/${req.file.filename}`,
+    res.status(204).json({
+      status: success,
+      allImages,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const getImage = async (req, res, next) => {
+  try {
+    const image = await db.Image.findOne({
+      where: {
+        questionId: req.params.questionId,
+      },
     });
 
-    newQuestion.image = image;
-
-    res.status(201).json({
-      status: "success",
-      message: "สร้างคำถามสำเร็จ",
-      newQuestion,
+    res.status(204).json({
+      status: success,
       image,
     });
   } catch (error) {
@@ -34,6 +38,97 @@ const uploadImage = async (req, res, next) => {
   }
 };
 
+const uploadImage = async (req, res, next) => {
+  try {
+    if (req.file == undefined) {
+      return res.status(404).json({
+        status: "fail",
+        message: "ไม่พบไฟล์รูปภาพ",
+      });
+    }
+
+    const newImage = await db.Image.create({
+      questionId: req.body.questionId,
+      type: req.file.mimetype,
+      name: req.file.originalname,
+      path: req.file.filename,
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: "อัพโหลดรูปภาพสำเร็จ",
+      newImage,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const changeImage = async (req, res, next) => {
+  try {
+    if (req.file == undefined) {
+      return res.status(404).json({
+        status: "fail",
+        message: "ไม่พบไฟล์รูปภาพ",
+      });
+    }
+
+    // const find = await db.Image.findOne({
+    //   where: { questionId: req.params.questionId },
+    // });
+
+    // fs.unlinkSync(path.join(__dirname, `public/img/${find.filename}`));
+
+    const updateImage = await db.Image.update(
+      {
+        questionId: req.params.questionId,
+        type: req.file.mimetype,
+        name: req.file.originalname,
+        path: req.file.filename,
+      },
+      {
+        where: { questionId: req.params.questionId },
+      }
+    );
+
+    res.status(201).json({
+      status: "success",
+      message: "อัพเดทรูปภาพสำเร็จ",
+      updateImage,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const deleteImage = async (req, res, next) => {
+  try {
+    await db.Image.destroy({
+      questionId: req.params.questionId,
+      type: req.file.mimetype,
+      name: req.file.originalname,
+      path: req.file.filename,
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 module.exports = {
+  getImage,
+  getAllImages,
   uploadImage,
+  changeImage,
+  deleteImage,
 };

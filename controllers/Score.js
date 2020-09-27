@@ -59,11 +59,29 @@ const getAllScore = async (req, res, next) => {
       where: {
         studentId: req.user.studentId,
       },
+      include: {
+        model: db.Exam,
+        required: true,
+        include: {
+          model: db.Subject,
+          required: true,
+        },
+      },
     });
+
+    const scores = allScore.map((element) => ({
+      subject: element.Exam.Subject.subjectName,
+      exam: element.Exam.examName,
+      examType: element.Exam.examType,
+      term: element.Exam.term,
+      year: element.Exam.year,
+      sum: element.sum,
+      score: element.score,
+    }));
 
     res.status(200).json({
       status: "success",
-      allScore,
+      scores,
     });
   } catch (error) {
     res.status(400).json({

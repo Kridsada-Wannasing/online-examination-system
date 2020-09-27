@@ -12,6 +12,23 @@ function generateRandomPassword() {
   return Math.random().toString(32).substr(2, 10);
 }
 
+const getAllTeachers = async (req, res, next) => {
+  const queryString = req.query;
+  try {
+    const allTeachers = await db.Teacher.findAll({ where: { ...queryString } });
+
+    res.status(200).json({
+      status: "success",
+      allTeachers,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const registerOne = async (req, res, next) => {
   const { email } = req.body;
   const target = await db.Teacher.findOne({ where: { email: email } });
@@ -60,7 +77,9 @@ const registerMany = async (req, res, next) => {
   const newAccount = await db.Teacher.bulkCreate(target);
 
   const url = `${req.protocol}://${req.get("host")}/teacher`;
-  // newTeacher.map((teacher) => await new Email(teacher, url).sendWelcome());
+  newTeacher.map(
+    async (teacher) => await new Email(teacher, url).sendWelcome()
+  );
 
   res.status(201).json({
     status: "success",
@@ -87,12 +106,19 @@ const login = async (req, res, next) => {
         teacherId: target.teacherId,
       };
       const token = jwt.sign(payload, process.env.SECRET_OR_KEY, {
-        expiresIn: 3600,
+        expiresIn: "7d",
       });
 
       res.status(200).json({
         message: "เข้าสู่ระบบสำเร็จ",
         token,
+        teacher: {
+          firstName: target.firstName,
+          lastName: target.lastName,
+          email: target.email,
+          faculty: target.faculty,
+          department: target.department,
+        },
       });
     } else {
       res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
@@ -100,23 +126,15 @@ const login = async (req, res, next) => {
   }
 };
 
-const updateMe = (req, res, next) => {
+const updateMe = async (req, res, next) => {
   try {
-    const updatedAccount = db.Teacher.update(req.body, {
+    await db.Teacher.update(req.body, {
       where: { teacherId: req.user.teacherId },
     });
 
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
       message: "อัพเดทข้อมูลผู้ใช้สำเร็จ",
-      teacher: {
-        teacherId: updatedAccount.teacherId,
-        firstName: updatedAccount.firstName,
-        lastName: updatedAccount.lastName,
-        email: updatedAccount.email,
-        faculty: updatedAccount.faculty,
-        department: updatedAccount.department,
-      },
     });
   } catch (error) {
     res.status(400).json({
@@ -150,6 +168,7 @@ const updatePassword = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ",
+      candidateNewPassword,
     });
   } catch (error) {
     res.status(400).json({
@@ -178,9 +197,9 @@ const forgotPassword = async (req, res, next) => {
       }
     );
 
-    const student = req.user;
+    const teacher = req.user;
     const url = `${req.protocol}://${req.get("host")}/teacher`;
-    await new Email(student, url).sendForgotPassword();
+    await new Email(teacher, url).sendForgotPassword();
 
     res.status(200).json({
       status: "success",
@@ -192,6 +211,7 @@ const forgotPassword = async (req, res, next) => {
 };
 
 module.exports = {
+  getAllTeachers,
   registerOne,
   registerMany,
   login,

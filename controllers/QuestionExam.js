@@ -16,15 +16,24 @@ const getQuestionInExam = async (req, res, next) => {
       where: {
         questionId: uniqueQuestionId,
       },
-      include: {
-        model: db.Choice,
-        required: true,
+      include: [db.Choice, db.Image],
+    });
+
+    const countAnswer = await db.Answer.findAll({
+      attributes: [
+        [db.sequelize.fn("count", db.sequelize.col("answer")), "countAnswer"],
+        "questionId",
+      ],
+      where: {
+        questionId: uniqueQuestionId,
       },
+      group: db.sequelize.col("questionId"),
     });
 
     res.status(201).json({
       status: "success",
       getQuestions,
+      countAnswer,
     });
   } catch (error) {
     console.log(error);

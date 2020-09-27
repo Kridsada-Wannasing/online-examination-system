@@ -46,6 +46,7 @@ const getAllExam = async (req, res, next) => {
       //ชุดข้อสอบของตัวเองหรือชุดข้อสอบที่ให้สิทธิ์การเข้าถึงเป็น Public
       where: {
         [Op.or]: [{ teacherId: req.user.teacherId }, { authority: true }],
+        subjectId: req.params.subjectId,
         ...queryString,
       },
     });
@@ -66,16 +67,9 @@ const getExam = async (req, res, next) => {
   try {
     const target = await db.Exam.findOne({
       where: { examId: req.params.examId },
-      include: {
-        model: db.QuestionExam,
-        include: {
-          model: db.Question,
-          include: [db.Choice],
-        },
-      },
     });
 
-    if (!target) res.status(404).send("หาข้อมูลไม่พบ");
+    if (!target) return res.status(404).send("หาข้อมูลไม่พบ");
 
     res.status(200).json({
       status: "success",
@@ -96,7 +90,7 @@ const updateExam = async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: "succes",
+      status: "success",
       message: "เปลี่ยนแปลงข้อมูลชุดข้อสอบนี้สำเร็จ",
       updatedExam,
     });

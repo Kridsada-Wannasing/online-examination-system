@@ -1,12 +1,18 @@
 const db = require("../models");
 
+const mapObjectInArray = (array, questionId) => {
+  return array.map((obj) => ({ ...obj, questionId }));
+};
+
 const createAnswer = async (req, res, next) => {
   try {
-    const newAnswer = await db.Answer.bulkCreate(req.body);
+    const newAnswers = await db.Answer.bulkCreate(
+      mapObjectInArray(req.body, req.params.questionId)
+    );
 
     res.status(201).json({
       status: "success",
-      newAnswer,
+      newAnswers,
     });
   } catch (error) {
     res.status(400).json({
@@ -23,6 +29,25 @@ const getAllAnswer = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       allAnswer,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const getAnswersInQuestion = async (req, res, next) => {
+  try {
+    const answersInQuestion = await db.Answer.findAll({
+      attributes: ["answer", "questionId"],
+      where: { questionId: req.params.questionId },
+    });
+
+    res.status(200).json({
+      status: "success",
+      answersInQuestion,
     });
   } catch (error) {
     res.status(400).json({
@@ -71,6 +96,7 @@ const deleteAnswer = async (req, res, next) => {
 module.exports = {
   createAnswer,
   getAllAnswer,
+  getAnswersInQuestion,
   updateAnswer,
   deleteAnswer,
 };

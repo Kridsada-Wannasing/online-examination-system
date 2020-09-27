@@ -59,14 +59,17 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
         model: db.Meeting,
         attributes: { exclude: ["createdAt", "updatedAt"] },
         required: true,
-        include: {
-          model: db.StudentMeeting,
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-          where: {
-            studentId: req.user.studentId,
+        include: [
+          {
+            model: db.StudentMeeting,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            where: {
+              studentId: req.user.studentId,
+            },
+            required: true,
           },
-          required: true,
-        },
+          { model: db.Subject, required: true },
+        ],
       },
     });
 

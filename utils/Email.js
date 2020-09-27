@@ -4,10 +4,10 @@ const ejs = require("ejs");
 
 module.exports = class Email {
   constructor(user, url) {
-    this.to = user.email;
-    this.firstName = user.firstName;
+    this.user = user;
     this.url = url;
     this.from = `Kridsada Wannasing <${process.env.EMAIL_FROM}>`;
+    this.to = user.email;
   }
 
   newTransport() {
@@ -32,7 +32,8 @@ module.exports = class Email {
 
   async send(template, subject) {
     const html = await ejs.renderFile(`${__dirname}/../views/${template}.ejs`, {
-      firstName: this.firstName,
+      firstName: this.user.firstName,
+      password: this.user.password,
       url: this.url,
       subject,
     });
