@@ -6,9 +6,7 @@ const mapObjectInArray = (array, questionId) => {
 
 const createChoice = async (req, res, next) => {
   try {
-    const newChoices = await db.Choice.bulkCreate(
-      mapObjectInArray(req.body, req.params.questionId)
-    );
+    const newChoices = await db.Choice.bulkCreate(req.body);
 
     res.status(201).json({
       status: "success",

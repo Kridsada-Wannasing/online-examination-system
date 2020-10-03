@@ -6,9 +6,7 @@ const mapObjectInArray = (array, questionId) => {
 
 const createAnswer = async (req, res, next) => {
   try {
-    const newAnswers = await db.Answer.bulkCreate(
-      mapObjectInArray(req.body, req.params.questionId)
-    );
+    const newAnswers = await db.Answer.bulkCreate(req.body);
 
     res.status(201).json({
       status: "success",
@@ -40,16 +38,19 @@ const getAllAnswer = async (req, res, next) => {
 
 const getAnswersInQuestion = async (req, res, next) => {
   try {
-    const answersInQuestion = await db.Answer.findAll({
-      attributes: ["answer", "questionId"],
+    let answers = await db.Answer.findAll({
+      attributes: ["answer"],
       where: { questionId: req.params.questionId },
     });
+
+    const answersInQuestion = answers.map((answer) => Number(answer.answer));
 
     res.status(200).json({
       status: "success",
       answersInQuestion,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

@@ -4,9 +4,10 @@ const router = express.Router();
 const meetingControllers = require("../controllers/Meeting");
 
 router.get("/", meetingControllers.getAllMeeting);
-router.get("/:meeting", meetingControllers.getMeeting);
+router.get("/:meetingId", meetingControllers.getMeeting);
 router.post("/", meetingControllers.createMeeting);
-router.patch("/:meeting", meetingControllers.updateMeeting);
-router.delete("/:meeting", meetingControllers.deleteMeeting);
+router.post("/invited", meetingControllers.addInvitedStudent);
+router.patch("/:meetingId", meetingControllers.updateMeeting);
+router.delete("/:meetingId", meetingControllers.deleteMeeting);
 
 module.exports = router;

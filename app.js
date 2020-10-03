@@ -10,6 +10,7 @@ const studentRoutes = require("./routes/Student");
 const teacherRoutes = require("./routes/Teacher");
 const cors = require("cors");
 const path = require("path");
+const socketIo = require("socket.io");
 
 require("./config/passport/Student");
 require("./config/passport/Teacher");
@@ -28,8 +29,18 @@ if (process.env.NODE_ENV === "development") {
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
 
-db.sequelize.sync().then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log(`App running on port ${process.env.PORT}`);
+const expressServer = app.listen(process.env.PORT, () => {
+  console.log(`App running on port ${process.env.PORT}`);
+});
+
+const io = socketIo(expressServer);
+
+io.on("connection", (socket) => {
+  console.log("Connected: ", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected ");
   });
 });
+
+db.sequelize.sync().then(() => expressServer);

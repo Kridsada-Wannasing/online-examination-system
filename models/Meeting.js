@@ -21,7 +21,7 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Subject, {
       foreignKey: "subjectId",
     });
-    model.hasMany(models.Examination, {
+    model.hasOne(models.Examination, {
       foreignKey: "meetingId",
     });
   };

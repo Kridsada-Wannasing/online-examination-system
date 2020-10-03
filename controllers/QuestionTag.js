@@ -9,11 +9,11 @@ const getTagsInQuestion = async (req, res, next) => {
     const tagsOfQuestion = await db.QuestionTag.findAll({
       where: {
         questionId: req.params.questionId,
-        include: [db.Tag],
       },
+      include: [db.Tag],
     });
 
-    res.status(400).json({
+    res.status(200).json({
       status: "success",
       tagsOfQuestion,
     });
@@ -27,11 +27,16 @@ const getTagsInQuestion = async (req, res, next) => {
 
 const addTagToQuestion = async (req, res, next) => {
   try {
-    const newTagsInQuestion = await db.QuestionTag.bulkCreate(
-      mapObjectInArray(req.body, req.params.questionId)
-    );
+    await db.QuestionTag.bulkCreate(req.body);
 
-    res.status(400).json({
+    const newTagsInQuestion = await db.QuestionTag.findAll({
+      where: {
+        questionId: req.params.questionId,
+      },
+      include: [db.Tag],
+    });
+
+    res.status(201).json({
       status: "success",
       newTagsInQuestion,
     });

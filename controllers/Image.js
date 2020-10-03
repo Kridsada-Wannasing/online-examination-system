@@ -6,7 +6,7 @@ const getAllImages = async (req, res, next) => {
   try {
     const allImages = await db.Image.findAll();
 
-    res.status(204).json({
+    res.status(200).json({
       status: success,
       allImages,
     });
@@ -26,8 +26,8 @@ const getImage = async (req, res, next) => {
       },
     });
 
-    res.status(204).json({
-      status: success,
+    res.status(200).json({
+      status: "success",
       image,
     });
   } catch (error) {

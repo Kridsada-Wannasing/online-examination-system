@@ -56,11 +56,11 @@ module.exports = class Email {
     await this.send("welcome", "ยินดีต้อนรับ");
   }
 
-  async sendPasswordReset() {
-    await this.send("passwordReset", "้ตั้งค่ารหัสผ่านใหม่");
+  async sendForgotPassword() {
+    await this.send("forgotPassword", "้ตั้งค่ารหัสผ่านใหม่");
   }
 
   async sendUpdatePassword() {
-    await this.send("passwordReset", "้เปลี่ยนแปลงรหัสผ่าน");
+    await this.send("updatePassword", "้เปลี่ยนแปลงรหัสผ่าน");
   }
 };

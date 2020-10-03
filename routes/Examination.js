@@ -8,6 +8,7 @@ router.get("/", examinationControllers.getAllExaminations);
 router.get("/:examinationId", examinationControllers.getExamination);
 router.post("/", examinationControllers.createExamination);
 router.post("/:examinationId", examinationControllers.enterToExamination);
+router.post("/invited", examinationControllers.addInvitedStudent);
 router.patch("/:examinationId", examinationControllers.updateExamination);
 router.delete("/:examinationId", examinationControllers.cancelExamination);
 

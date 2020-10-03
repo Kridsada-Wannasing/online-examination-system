@@ -1,4 +1,5 @@
 const db = require("../models");
+const { io } = require("../app");
 
 const createMeeting = async (req, res, next) => {
   try {
@@ -7,22 +8,28 @@ const createMeeting = async (req, res, next) => {
       teacherId: req.user.teacherId,
       subjectId: req.body.subjectId,
     });
-    // const studentMeeting = await db.StudentMeeting.create({
-    //   studentId: req.body.studentId,
-    //   meetingId: newMeeting.meetingId,
-    // });
 
     res.status(201).json({
       status: "success",
       message: "สร้างการนัดหมายสำเร็จ",
-      // meeting: {
-      //   meetingId: newMeeting.meetingId,
-      //   startDate: newMeeting.startDate,
-      //   teacherId: newMeeting.teacherId,
-      //   studentId: studentMeeting.studentId,
-      //   subjectId: newMeeting.subjectId,
-      // },
       newMeeting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const addInvitedStudent = async (req, res, next) => {
+  try {
+    const studentMeeting = await db.StudentMeeting.bulkCreate(req.body);
+
+    res.status(201).json({
+      status: "success",
+      message: "สร้างการนัดหมายสำเร็จ",
+      studentMeeting,
     });
   } catch (error) {
     res.status(400).json({
@@ -35,6 +42,7 @@ const createMeeting = async (req, res, next) => {
 const getAllMeeting = async (req, res, next) => {
   try {
     const allMeeting = await db.Meeting.findAll({
+      where: { teacherId: req.user.teacherId, ...req.query },
       include: [db.Subject],
     });
 
@@ -54,7 +62,7 @@ const getMeeting = async (req, res, next) => {
   try {
     const target = await db.Meeting.findOne({
       where: { meetingId: req.params.meetingId },
-      include: [db.Exam, db.Section, db.Teacher],
+      include: [db.Subject],
     });
 
     res.status(200).json({
@@ -105,6 +113,7 @@ const deleteMeeting = async (req, res, next) => {
 
 module.exports = {
   createMeeting,
+  addInvitedStudent,
   getAllMeeting,
   getMeeting,
   updateMeeting,

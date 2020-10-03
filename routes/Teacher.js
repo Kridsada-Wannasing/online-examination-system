@@ -17,6 +17,8 @@ const meetingNestedRoutes = require("./Meeting");
 const examinationNestedRoutes = require("./Examination");
 const imageNestedRoutes = require("./Image");
 const registrationNestedRoutes = require("../routes/Registration");
+const scoreNestedRoutes = require("../routes/Score");
+const studentMeetingNestedRoutes = require("../routes/StudentMeeting");
 
 const auth = passport.authenticate("teacher-jwt", { session: false });
 
@@ -44,5 +46,7 @@ router.use("/meeting", meetingNestedRoutes);
 router.use("/examination", examinationNestedRoutes);
 router.use("/image", imageNestedRoutes);
 router.use("/registration", registrationNestedRoutes);
+router.use("/score", scoreNestedRoutes);
+router.use("/student-meeting", studentMeetingNestedRoutes);
 
 module.exports = router;

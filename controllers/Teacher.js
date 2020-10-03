@@ -168,7 +168,6 @@ const updatePassword = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ",
-      candidateNewPassword,
     });
   } catch (error) {
     res.status(400).json({
@@ -197,7 +196,7 @@ const forgotPassword = async (req, res, next) => {
       }
     );
 
-    const teacher = req.user;
+    const teacher = { ...req.user, password: randomPassword };
     const url = `${req.protocol}://${req.get("host")}/teacher`;
     await new Email(teacher, url).sendForgotPassword();
 

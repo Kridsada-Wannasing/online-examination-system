@@ -17,6 +17,23 @@ const createExamination = async (req, res, next) => {
   }
 };
 
+const addInvitedStudent = async (req, res, next) => {
+  try {
+    const studentMeeting = await db.StudentMeeting.bulkCreate(req.body);
+
+    res.status(201).json({
+      status: "success",
+      message: "สร้างการนัดหมายสำเร็จ",
+      studentMeeting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const getAllExaminations = async (req, res, next) => {
   try {
     const allExamination = await db.Examination.findAll();
@@ -53,32 +70,68 @@ const getExamination = async (req, res, next) => {
 
 const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
-    const examinationsForInvitedStudent = await db.Examination.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+    // const examinationsForInvitedStudent = await db.Examination.findAll({
+    //   attributes: { exclude: ["createdAt", "updatedAt"] },
+    //   include: {
+    //     model: db.Meeting,
+    //     attributes: { exclude: ["createdAt", "updatedAt"] },
+    //     required: true,
+    //     include: [
+    //       {
+    //         model: db.StudentMeeting,
+    //         attributes: { exclude: ["createdAt", "updatedAt"] },
+    //         where: {
+    //           studentId: req.user.studentId,
+    //         },
+    //         required: true,
+    //       },
+    //       { model: db.Subject, required: true },
+    //     ],
+    //   },
+    // });
+
+    const examinations = await db.StudentMeeting.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "studentMeetingId", "meetingId"],
+      },
+      where: {
+        studentId: req.user.studentId,
+      },
+      required: true,
       include: {
+        attributes: { exclude: ["createdAt", "updatedAt", "subjectId"] },
         model: db.Meeting,
-        attributes: { exclude: ["createdAt", "updatedAt"] },
         required: true,
         include: [
           {
-            model: db.StudentMeeting,
+            attributes: { exclude: ["createdAt", "updatedAt", "examId"] },
+            model: db.Examination,
+            required: true,
+            include: [
+              {
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                model: db.Exam,
+                required: true,
+              },
+            ],
+          },
+          {
             attributes: { exclude: ["createdAt", "updatedAt"] },
-            where: {
-              studentId: req.user.studentId,
-            },
+            model: db.Subject,
             required: true,
           },
-          { model: db.Subject, required: true },
         ],
       },
     });
 
-    const examinationOfToday = examinationsForInvitedStudent.filter(
-      (examination) =>
-        examination.startDate.getDate() == new Date().getDate() &&
-        examination.startDate.getMonth() == new Date().getMonth() &&
-        examination.startDate.getFullYear() == new Date().getFullYear()
-    );
+    const examinationsForInvitedStudent = examinations.map((examination) => ({
+      meeting: examination.Meeting,
+      subject: examination.Meeting.Subject,
+      examination: examination.Meeting.Examination,
+      exam: examination.Meeting.Examination.exam,
+    }));
+
+    console.log(examinationsForInvitedStudent);
 
     res.status(200).json({
       status: "success",
@@ -94,9 +147,7 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
 };
 
 const enterToExamination = async (req, res, next) => {
-  console.log(req.headers);
   const { password } = req.body;
-  console.log(password);
   try {
     const getExamination = await db.Examination.findOne({
       where: { examinationId: req.params.examinationId },
@@ -163,6 +214,7 @@ const cancelExamination = async (req, res, next) => {
 
 module.exports = {
   createExamination,
+  addInvitedStudent,
   getAllExaminations,
   getExamination,
   getExaminationsForInvitedStudent,

@@ -104,9 +104,6 @@ const registerMany = async (req, res, next) => {
       return { ...obj, password: hashedPassword(randomPassword) };
     });
 
-    console.log(newStudent);
-    console.log(createStudents);
-
     const newAccount = await db.Student.bulkCreate(createStudents);
 
     const url = `${req.protocol}://${req.get("host")}/student`;
@@ -118,8 +115,7 @@ const registerMany = async (req, res, next) => {
       newAccount,
     });
   } catch (error) {
-    console.log(error);
-    res.status(201).json({
+    res.status(400).json({
       status: "fail",
       error,
     });
@@ -232,17 +228,18 @@ const forgotPassword = async (req, res, next) => {
     if (!target) throw "กรอกอีเมลผิดหรือไม่มีอีเมลนี้";
 
     const randomPassword = generateRandomPassword();
+    const hashedPassword = hashedPassword(randomPassword);
 
-    const updatePassword = await db.Student.update(
-      { password: randomPassword },
+    await db.Student.update(
+      { password: hashedPassword },
       {
         where: { studentId: req.user.studentId },
       }
     );
 
-    const student = updatePassword;
+    const student = { ...req.user, password: randomPassword };
     const url = `${req.protocol}://${req.get("host")}/student`;
-    await new Email(student, url).sendPasswordReset();
+    await new Email(student, url).sendForgotPassword();
 
     res.status(200).json({
       status: "success",

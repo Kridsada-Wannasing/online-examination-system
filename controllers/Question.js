@@ -6,42 +6,12 @@ const mapObjectInArray = (array, questionId) => {
 
 const createQuestion = async (req, res, next) => {
   try {
-    const newQuestion = await db.Question.create(req.body.question);
+    const newQuestion = await db.Question.create(req.body);
 
     await db.QuestionExam.create({
-      examId: req.body.question.examId,
+      examId: req.body.examId,
       questionId: newQuestion.questionId,
     });
-    const newChoices = await db.Choice.bulkCreate(
-      mapObjectInArray(req.body.choices, newQuestion.questionId)
-    );
-    const newAnswers = await db.Answer.bulkCreate(
-      mapObjectInArray(req.body.answers, newQuestion.questionId)
-    );
-    const newTagsInQuestion = await db.QuestionTag.bulkCreate(
-      mapObjectInArray(req.body.tags, newQuestion.questionId)
-    );
-
-    newQuestion.choices = await newChoices;
-    newQuestion.answers = await newAnswers;
-    newQuestion.tags = await newTagsInQuestion;
-
-    // if (req.file === undefined) {
-    //   return res.status(201).json({
-    //     status: "success",
-    //     message: "สร้างคำถามสำเร็จ",
-    //     newQuestion: newQuestion,
-    //   });
-    // }
-
-    // const newImage = await db.Image.create({
-    //   questionId: newQuestion.questionId,
-    //   type: req.file.mimetype,
-    //   name: req.file.originalname,
-    //   path: req.file.filename,
-    // });
-
-    // newQuestion.image = newImage;
 
     res.status(201).json({
       status: "success",

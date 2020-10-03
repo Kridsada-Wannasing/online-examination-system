@@ -12,23 +12,35 @@ const getQuestionInExam = async (req, res, next) => {
       ...new Set(questionInExam.map((item) => item.questionId)),
     ];
 
-    const getQuestions = await db.Question.findAll({
-      where: {
-        questionId: uniqueQuestionId,
-      },
-      include: [db.Choice, db.Image],
-    });
+    let getQuestions;
+    let countAnswer;
 
-    const countAnswer = await db.Answer.findAll({
-      attributes: [
-        [db.sequelize.fn("count", db.sequelize.col("answer")), "countAnswer"],
-        "questionId",
-      ],
-      where: {
-        questionId: uniqueQuestionId,
-      },
-      group: db.sequelize.col("questionId"),
-    });
+    if (Object.keys(req.user.dataValues).includes("teacherId")) {
+      getQuestions = await db.Question.findAll({
+        where: {
+          questionId: uniqueQuestionId,
+        },
+        include: [db.Choice],
+      });
+    } else {
+      getQuestions = await db.Question.findAll({
+        where: {
+          questionId: uniqueQuestionId,
+        },
+        include: [db.Choice, db.Image],
+      });
+
+      countAnswer = await db.Answer.findAll({
+        attributes: [
+          [db.sequelize.fn("count", db.sequelize.col("answer")), "countAnswer"],
+          "questionId",
+        ],
+        where: {
+          questionId: uniqueQuestionId,
+        },
+        group: db.sequelize.col("questionId"),
+      });
+    }
 
     res.status(201).json({
       status: "success",
