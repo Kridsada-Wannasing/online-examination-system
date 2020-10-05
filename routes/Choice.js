@@ -6,7 +6,7 @@ const choiceControllers = require("../controllers/Choice");
 router.get("/", choiceControllers.getAllChoice);
 router.get("/:questionId", choiceControllers.getChoicesInQuestion);
 router.post("/", choiceControllers.createChoice);
-router.patch("/:choiceId", choiceControllers.updateChoice);
-router.delete("/:choiceId", choiceControllers.deleteChoice);
+router.patch("/", choiceControllers.updateChoice);
+router.delete("/", choiceControllers.deleteChoice);
 
 module.exports = router;

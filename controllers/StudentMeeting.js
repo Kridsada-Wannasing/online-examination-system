@@ -2,12 +2,21 @@ const db = require("../models");
 
 const createStudentInMeeting = async (req, res, next) => {
   try {
-    const newStudentInMeeting = await db.StudentMeeting.bulkCreate(req.body);
+    await db.StudentMeeting.bulkCreate(req.body);
 
-    res.status(201).json({
+    let newStudentInMeeting = req.body.map((student) => student.studentId);
+
+    const students = await db.Student.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+      where: {
+        studentId: newStudentInMeeting,
+      },
+    });
+
+    res.status(200).json({
       status: "success",
-      message: "สร้างรายวิชาสำเร็จ",
-      newStudentInMeeting,
+      message: "เพิ่มนักศึกษาสำหรับนัดหมายการสอบเรียบร้อย",
+      students,
     });
   } catch (error) {
     res.status(400).json({

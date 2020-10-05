@@ -9,6 +9,15 @@ module.exports = (sequelize, dataTypes) => {
     examDate: {
       type: dataTypes.DATE,
     },
+    // examType: {
+    //   type: dataTypes.STRING(20),
+    // },
+    // term: {
+    //   type: dataTypes.INTEGER(1),
+    // },
+    // year: {
+    //   type: dataTypes.INTEGER(4),
+    // },
   });
 
   model.associate = (models) => {
@@ -24,6 +33,9 @@ module.exports = (sequelize, dataTypes) => {
     model.hasOne(models.Examination, {
       foreignKey: "meetingId",
     });
+    // model.hasMany(models.Score, {
+    //   foreignKey: "meetingId",
+    // });
   };
 
   return model;

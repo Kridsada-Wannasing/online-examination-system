@@ -8,9 +8,17 @@ const createChoice = async (req, res, next) => {
   try {
     const newChoices = await db.Choice.bulkCreate(req.body);
 
+    const question = await db.Question.findOne({
+      where: {
+        questionId: newChoices[0].questionId,
+      },
+      include: [db.Choice],
+    });
+
     res.status(201).json({
       status: "success",
       newChoices,
+      question,
     });
   } catch (error) {
     res.status(400).json({
@@ -56,18 +64,26 @@ const getChoicesInQuestion = async (req, res, next) => {
 
 const updateChoice = async (req, res, next) => {
   try {
-    const updatedChoice = await db.Choice.update(
-      { choice: req.body.choice },
-      {
-        where: { choiceId: req.params.choiceId },
-      }
-    );
+    await db.Choice.destroy({
+      where: { questionId: req.body[0].questionId },
+    });
+
+    const updatedChoice = await db.Choice.bulkCreate(req.body);
+
+    const question = await db.Question.findOne({
+      where: {
+        questionId: req.body[0].questionId,
+      },
+      include: [db.Choice],
+    });
 
     res.status(200).json({
       status: "success",
       updatedChoice,
+      question,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

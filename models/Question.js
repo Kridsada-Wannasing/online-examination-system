@@ -17,6 +17,9 @@ module.exports = (sequelize, dataTypes) => {
       level: {
         type: dataTypes.INTEGER(1),
       },
+      // numberOfAnswer: {
+      //   type: dataTypes.INTEGER(2),
+      // },
       // score: {
       //   type: dataTypes.INTEGER(3),
       // },
@@ -40,9 +43,9 @@ module.exports = (sequelize, dataTypes) => {
     model.hasOne(models.Image, {
       foreignKey: "questionId",
     });
-    // model.hasMany(models.QuestionTag, {
-    //   foreignKey: "questionId",
-    // });
+    model.hasMany(models.QuestionTag, {
+      foreignKey: "questionId",
+    });
   };
 
   return model;

@@ -11,6 +11,7 @@ const questionExamNestedRoutes = require("../routes/QuestionExam");
 const examNestedRoutes = require("../routes/Exam");
 const answerNestedRoutes = require("../routes/Answer");
 const examinationNestedRoutes = require("../routes/Examination");
+const notificationNestedRoutes = require("../routes/Notification");
 
 const auth = passport.authenticate("student-jwt", { session: false });
 
@@ -29,5 +30,6 @@ router.use("/exam", examNestedRoutes);
 router.use("/answer", answerNestedRoutes);
 router.use("/examination", examinationNestedRoutes);
 router.use("/question-exam", questionExamNestedRoutes);
+router.use("/notification", notificationNestedRoutes);
 
 module.exports = router;

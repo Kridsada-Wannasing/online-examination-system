@@ -22,23 +22,6 @@ const createMeeting = async (req, res, next) => {
   }
 };
 
-const addInvitedStudent = async (req, res, next) => {
-  try {
-    const studentMeeting = await db.StudentMeeting.bulkCreate(req.body);
-
-    res.status(201).json({
-      status: "success",
-      message: "สร้างการนัดหมายสำเร็จ",
-      studentMeeting,
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      error,
-    });
-  }
-};
-
 const getAllMeeting = async (req, res, next) => {
   try {
     const allMeeting = await db.Meeting.findAll({
@@ -113,7 +96,6 @@ const deleteMeeting = async (req, res, next) => {
 
 module.exports = {
   createMeeting,
-  addInvitedStudent,
   getAllMeeting,
   getMeeting,
   updateMeeting,

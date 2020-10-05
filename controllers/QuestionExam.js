@@ -72,6 +72,31 @@ const addQuestionToExam = async (req, res, next) => {
   }
 };
 
+const importQuestionsInExam = async (req, res, next) => {
+  try {
+    const newQuestionInExam = await db.QuestionExam.bulkCreate(req.body);
+
+    let target = newQuestionInExam.map((question) => question.questionId);
+
+    const newQuestion = await db.Question.findAll({
+      where: {
+        questionId: target,
+      },
+      include: [db.Choice],
+    });
+
+    res.status(201).json({
+      status: "success",
+      newQuestion,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const deleteQuestionInExam = async (req, res, next) => {
   //ส่ง questionId มาเป็นอาเรย์ของ id ที่ต้องดารลบ
   const { deleteRows } = req.body;
@@ -93,6 +118,7 @@ const deleteQuestionInExam = async (req, res, next) => {
 
 module.exports = {
   addQuestionToExam,
+  importQuestionsInExam,
   deleteQuestionInExam,
   getQuestionInExam,
 };

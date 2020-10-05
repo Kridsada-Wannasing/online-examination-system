@@ -50,13 +50,13 @@ const addTagToQuestion = async (req, res, next) => {
 
 const updateTagOfQuestion = async (req, res, next) => {
   try {
-    await db.QuestionTag.destroy(req.params.questionId);
+    await db.QuestionTag.destroy({
+      where: { questionId: req.body[0].questionId },
+    });
 
-    const updatedTagOfQuestion = await db.QuestionTag.bulkCreate(
-      mapObjectInArray(req.body, req.params.questionId)
-    );
+    const updatedTagOfQuestion = await db.QuestionTag.bulkCreate(req.body);
 
-    res.status(400).json({
+    res.status(200).json({
       status: "success",
       updatedTagOfQuestion,
     });

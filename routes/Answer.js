@@ -6,7 +6,7 @@ const answerControllers = require("../controllers/Answer");
 router.get("/", answerControllers.getAllAnswer);
 router.get("/:questionId", answerControllers.getAnswersInQuestion);
 router.post("/", answerControllers.createAnswer);
-router.patch("/:answerId", answerControllers.updateAnswer);
-router.delete("/:answerId", answerControllers.deleteAnswer);
+router.patch("/", answerControllers.updateAnswer);
+router.delete("/", answerControllers.deleteAnswer);
 
 module.exports = router;

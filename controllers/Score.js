@@ -55,12 +55,12 @@ const createScore = async (req, res, next) => {
 
 const getAllScore = async (req, res, next) => {
   try {
-    let keys = Object.keys(req.user);
     let user = {};
-    if (keys.includes("studentId")) user.studentId = req.user.studentId;
+    if (req.user.dataValues.hasOwnProperty("studentId"))
+      user.studentId = req.user.studentId;
 
     const allScore = await db.Score.findAll({
-      where: { ...user },
+      where: user,
       include: [
         {
           model: db.Exam,
@@ -82,7 +82,8 @@ const getAllScore = async (req, res, next) => {
 
     const scores = allScore.map((element) => ({
       student: element.Student,
-      subject: element.Exam.Subject,
+      subject: element.Exam.Subject.subjectName,
+      subjectId: element.Exam.Subject.subjectId,
       exam: element.Exam.examName,
       examType: element.Exam.examType,
       term: element.Exam.term,

@@ -8,9 +8,16 @@ const createAnswer = async (req, res, next) => {
   try {
     const newAnswers = await db.Answer.bulkCreate(req.body);
 
+    const question = await db.Question.findOne({
+      where: {
+        questionId: newAnswers[0].questionId,
+      },
+    });
+
     res.status(201).json({
       status: "success",
       newAnswers,
+      question,
     });
   } catch (error) {
     res.status(400).json({
@@ -43,7 +50,7 @@ const getAnswersInQuestion = async (req, res, next) => {
       where: { questionId: req.params.questionId },
     });
 
-    const answersInQuestion = answers.map((answer) => Number(answer.answer));
+    const answersInQuestion = answers.map((answer) => answer.answer);
 
     res.status(200).json({
       status: "success",
@@ -60,16 +67,22 @@ const getAnswersInQuestion = async (req, res, next) => {
 
 const updateAnswer = async (req, res, next) => {
   try {
-    const updatedAnswer = await db.Answer.update(
-      { answer: req.body.answer },
-      {
-        where: { answerId: req.params.answerId },
-      }
-    );
+    await db.Answer.destroy({
+      where: { questionId: req.body[0].questionId },
+    });
+
+    const updatedAnswer = await db.Answer.bulkCreate(req.body);
+
+    const question = await db.Question.findOne({
+      where: {
+        questionId: updatedAnswer[0].questionId,
+      },
+    });
 
     res.status(200).json({
       status: "success",
       updatedAnswer,
+      question,
     });
   } catch (error) {
     res.status(400).json({

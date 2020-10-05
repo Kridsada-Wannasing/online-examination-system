@@ -107,13 +107,11 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
             attributes: { exclude: ["createdAt", "updatedAt", "examId"] },
             model: db.Examination,
             required: true,
-            include: [
-              {
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-                model: db.Exam,
-                required: true,
-              },
-            ],
+            include: {
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              model: db.Exam,
+              required: true,
+            },
           },
           {
             attributes: { exclude: ["createdAt", "updatedAt"] },
