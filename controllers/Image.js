@@ -84,13 +84,12 @@ const changeImage = async (req, res, next) => {
 
     const updateImage = await db.Image.update(
       {
-        questionId: req.params.questionId,
         type: req.file.mimetype,
         name: req.file.originalname,
         path: req.file.filename,
       },
       {
-        where: { questionId: req.params.questionId },
+        where: { questionId: req.body.questionId },
       }
     );
 

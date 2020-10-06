@@ -60,7 +60,7 @@ const getAllScore = async (req, res, next) => {
       user.studentId = req.user.studentId;
 
     const allScore = await db.Score.findAll({
-      where: user,
+      where: { ...user, examId: req.query.examId },
       include: [
         {
           model: db.Exam,
@@ -68,7 +68,7 @@ const getAllScore = async (req, res, next) => {
           include: {
             model: db.Subject,
             where: {
-              ...req.body,
+              subjectId: req.query.subjectId,
             },
             required: true,
           },
@@ -97,6 +97,7 @@ const getAllScore = async (req, res, next) => {
       scores,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

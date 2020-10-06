@@ -36,7 +36,9 @@ const addInvitedStudent = async (req, res, next) => {
 
 const getAllExaminations = async (req, res, next) => {
   try {
-    const allExamination = await db.Examination.findAll();
+    const allExamination = await db.Examination.findAll({
+      order: [["startExam", "DESC"]],
+    });
 
     res.status(201).json({
       status: "success",
@@ -70,26 +72,6 @@ const getExamination = async (req, res, next) => {
 
 const getExaminationsForInvitedStudent = async (req, res, next) => {
   try {
-    // const examinationsForInvitedStudent = await db.Examination.findAll({
-    //   attributes: { exclude: ["createdAt", "updatedAt"] },
-    //   include: {
-    //     model: db.Meeting,
-    //     attributes: { exclude: ["createdAt", "updatedAt"] },
-    //     required: true,
-    //     include: [
-    //       {
-    //         model: db.StudentMeeting,
-    //         attributes: { exclude: ["createdAt", "updatedAt"] },
-    //         where: {
-    //           studentId: req.user.studentId,
-    //         },
-    //         required: true,
-    //       },
-    //       { model: db.Subject, required: true },
-    //     ],
-    //   },
-    // });
-
     const examinations = await db.StudentMeeting.findAll({
       attributes: {
         exclude: ["createdAt", "updatedAt", "studentMeetingId", "meetingId"],

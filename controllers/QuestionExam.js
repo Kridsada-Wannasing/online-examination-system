@@ -87,6 +87,7 @@ const importQuestionsInExam = async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
+      message: "เพิ่มคำถามจากชุดข้อสอบที่มีอยู่สำเร็จ",
       newQuestion,
     });
   } catch (error) {

@@ -82,9 +82,11 @@ const registerMany = async (req, res, next) => {
     let studentId = req.body.map((student) => student.studentId);
 
     const allStudent = await db.Student.findAll({
-      attributes: { exclude: ["password"] },
+      attributes: ["studentId"],
       where: { studentId: studentId },
     });
+
+    console.log(allStudent);
 
     let target = differenceBy(req.body, allStudent, "studentId");
 

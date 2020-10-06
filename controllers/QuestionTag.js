@@ -6,12 +6,13 @@ const mapObjectInArray = (array, questionId) => {
 
 const getTagsInQuestion = async (req, res, next) => {
   try {
-    const tagsOfQuestion = await db.QuestionTag.findAll({
+    const tags = await db.QuestionTag.findAll({
       where: {
         questionId: req.params.questionId,
       },
-      include: [db.Tag],
     });
+
+    const tagsOfQuestion = tags.map((tag) => tag.tagId);
 
     res.status(200).json({
       status: "success",

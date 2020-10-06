@@ -27,6 +27,7 @@ const getAllMeeting = async (req, res, next) => {
     const allMeeting = await db.Meeting.findAll({
       where: { teacherId: req.user.teacherId, ...req.query },
       include: [db.Subject],
+      order: [["examDate", "DESC"]],
     });
 
     res.status(200).json({
