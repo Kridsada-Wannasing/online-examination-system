@@ -48,7 +48,52 @@ const getQuestionInExam = async (req, res, next) => {
       countAnswer,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+const searchQuestions = async (req, res, next) => {
+  try {
+    const questionInExam = await db.QuestionExam.findAll({
+      attributes: [
+        [
+          db.Sequelize.fn("DISTINCT", db.Sequelize.col("questionId")),
+          "questionId",
+        ],
+      ],
+      where: {
+        examId: req.params.examId,
+      },
+    });
+
+    const uniqueQuestionId = questionInExam.map((item) => item.questionId);
+
+    let tags = {};
+
+    if (Array.isArray(req.query.tagId) && req.query.tagId.length > 0) {
+      tags.tagId = req.query.tagId;
+      delete req.query.tagId;
+    }
+
+    let getQuestions = await db.Question.findAll({
+      where: {
+        questionId: uniqueQuestionId,
+        ...req.query,
+      },
+      include: [
+        { model: db.Choice },
+        { model: db.QuestionTag, where: tags, include: [db.Tag] },
+      ],
+    });
+
+    res.status(201).json({
+      status: "success",
+      getQuestions,
+    });
+  } catch (error) {
     res.status(400).json({
       status: "fail",
       error,
@@ -119,6 +164,7 @@ const deleteQuestionInExam = async (req, res, next) => {
 
 module.exports = {
   addQuestionToExam,
+  searchQuestions,
   importQuestionsInExam,
   deleteQuestionInExam,
   getQuestionInExam,

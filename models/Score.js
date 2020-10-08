@@ -27,12 +27,12 @@ module.exports = (sequelize, dataTypes) => {
     model.belongsTo(models.Student, {
       foreignKey: "studentId",
     });
-    // model.belongsTo(models.Subject, {
-    //   foreignKey: "subjectId",
-    // });
-    // model.belongsTo(models.Meeting, {
-    //   foreignKey: "meetingId",
-    // });
+    model.belongsTo(models.Subject, {
+      foreignKey: "subjectId",
+    });
+    model.belongsTo(models.Meeting, {
+      foreignKey: "meetingId",
+    });
   };
 
   return model;

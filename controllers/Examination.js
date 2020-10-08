@@ -80,38 +80,48 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
         studentId: req.user.studentId,
       },
       required: true,
-      include: {
-        attributes: { exclude: ["createdAt", "updatedAt", "subjectId"] },
-        model: db.Meeting,
-        required: true,
-        include: [
-          {
-            attributes: { exclude: ["createdAt", "updatedAt", "examId"] },
-            model: db.Examination,
-            required: true,
-            include: {
+      include: [
+        {
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "subjectId",
+              "examId",
+              "teacherId",
+            ],
+          },
+          model: db.Meeting,
+          required: true,
+          include: [
+            {
               attributes: { exclude: ["createdAt", "updatedAt"] },
               model: db.Exam,
               required: true,
             },
-          },
-          {
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            model: db.Subject,
-            required: true,
-          },
-        ],
-      },
+            {
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              model: db.Subject,
+              required: true,
+            },
+            {
+              attributes: {
+                exclude: ["createdAt", "updatedAt", "password", "email"],
+              },
+              model: db.Teacher,
+              required: true,
+            },
+          ],
+        },
+      ],
     });
 
     const examinationsForInvitedStudent = examinations.map((examination) => ({
       meeting: examination.Meeting,
       subject: examination.Meeting.Subject,
-      examination: examination.Meeting.Examination,
-      exam: examination.Meeting.Examination.exam,
+      exam: examination.Meeting.Exam,
+      teacher: examination.Meeting.Teacher,
     }));
-
-    console.log(examinationsForInvitedStudent);
 
     res.status(200).json({
       status: "success",
@@ -127,33 +137,35 @@ const getExaminationsForInvitedStudent = async (req, res, next) => {
 };
 
 const enterToExamination = async (req, res, next) => {
-  const { password } = req.body;
   try {
-    const getExamination = await db.Examination.findOne({
-      where: { examinationId: req.params.examinationId },
+    const { password } = req.body;
+
+    const getExamination = await db.Meeting.findOne({
+      where: { meetingId: req.params.meetingId },
     });
 
-    if (getExamination) {
-      let passwordIsCorrect = getExamination.password == password;
-      console.log(passwordIsCorrect);
+    if (!getExamination) throw "ไม่มีห้องสอบนี้แล้ว";
 
-      if (passwordIsCorrect) {
-        res.status(200).json({
-          status: "success",
-          examId: getExamination.examId,
-        });
-      } else {
-        res.status(400).json({
-          status: "fail",
-          message: "รหัสผ่านผิด",
-        });
-      }
-    } else throw "ไม่มีห้องสอบนี้แล้ว";
+    let passwordIsCorrect = getExamination.password == password;
+
+    if (!passwordIsCorrect) throw "รหัสผ่านผิด";
+
+    let currentDate = new Date().getTime();
+    let startDate = new Date(getExamination.startDate).getTime();
+    let endDate = new Date(getExamination.endDate).getTime();
+
+    if (currentDate < startDate) throw "ขณะนี้ยังไม่ถึงเวลาสอบ";
+    else if (currentDate > endDate) throw "ขณะนี้หมดเวลาสอบแล้ว";
+    else {
+      res.status(200).json({
+        status: "success",
+        examId: getExamination.examId,
+      });
+    }
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
-      error,
+      message: error,
     });
   }
 };

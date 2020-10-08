@@ -24,10 +24,42 @@ const createExam = async (req, res, next) => {
 
 const duplicateExam = async (req, res, next) => {
   try {
-    const newDuplicateExam = await db.Exam.create(req.body);
+    const exam = await db.Exam.findOne({
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "examId", "teacherId"],
+      },
+      where: {
+        examId: req.params.examId,
+      },
+      include: {
+        model: db.QuestionExam,
+        attributes: ["questionId"],
+      },
+    });
+
+    let questions = exam.QuestionExams;
+
+    const newDuplicateExam = await db.Exam.create({
+      examType: exam.examType,
+      term: exam.term,
+      year: exam.year,
+      format: exam.format,
+      authority: exam.authority,
+      subjectId: exam.subjectId,
+      examName: `${exam.examName}(คัดลอก)`,
+      teacherId: req.user.teacherId,
+    });
+
+    await db.QuestionExam.bulkCreate(
+      questions.map((question) => ({
+        questionId: question.questionId,
+        examId: newDuplicateExam.examId,
+      }))
+    );
 
     res.status(200).json({
       status: "success",
+      message: "คัดลอกข้อสอบเรียบร้อย",
       newDuplicateExam,
     });
   } catch (error) {

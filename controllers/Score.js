@@ -31,12 +31,14 @@ const createScore = async (req, res, next) => {
 
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
-    const { examId } = req.body;
+    const { examId, subjectId, meetingId } = req.body;
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
       score,
       sum,
       examId,
+      meetingId,
+      subjectId,
     });
 
     res.status(201).json({

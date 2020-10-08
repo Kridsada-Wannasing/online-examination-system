@@ -1,4 +1,5 @@
 const db = require("../models");
+const Meeting = require("../utils/Meeting");
 
 const createStudentInMeeting = async (req, res, next) => {
   try {
@@ -12,6 +13,18 @@ const createStudentInMeeting = async (req, res, next) => {
         studentId: newStudentInMeeting,
       },
     });
+
+    const meeting = await db.Meeting.findOne({
+      attributes: { exclude: ["createdAt", "updatedAt", "subjectId"] },
+      where: {
+        meetingId: req.body[0].meetingId,
+      },
+      include: [db.Subject],
+    });
+
+    students.forEach((student) =>
+      new Meeting(meeting, student).sendScheduleAnExam()
+    );
 
     res.status(200).json({
       status: "success",

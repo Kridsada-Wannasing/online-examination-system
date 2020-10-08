@@ -1,10 +1,14 @@
 const db = require("../models");
 const { io } = require("../app");
+const Meeting = require("../utils/Meeting");
 
 const createMeeting = async (req, res, next) => {
   try {
     const newMeeting = await db.Meeting.create({
       examDate: req.body.examDate,
+      examType: req.body.examType,
+      term: req.body.term,
+      year: req.body.year,
       teacherId: req.user.teacherId,
       subjectId: req.body.subjectId,
     });
@@ -63,9 +67,21 @@ const getMeeting = async (req, res, next) => {
 
 const updateMeeting = async (req, res, next) => {
   try {
+    const students = await db.StudentMeeting.findAll({
+      attributes: ["meetingId"],
+      where: {
+        meetingId: req.params.meetingId,
+      },
+      include: [db.Student],
+    });
+
     const updatedMeeting = await db.Meeting.update(req.body, {
       where: { meetingId: req.params.meetingId },
     });
+
+    students.Student.forEach((student) =>
+      new Meeting(updatedMeeting, student).sendPostponeTheExam()
+    );
 
     res.status(200).json({
       status: "succes",
@@ -82,9 +98,34 @@ const updateMeeting = async (req, res, next) => {
 
 const deleteMeeting = async (req, res, next) => {
   try {
+    const students = await db.StudentMeeting.findAll({
+      attributes: ["meetingId"],
+      where: {
+        meetingId: req.params.meetingId,
+      },
+      include: [db.Student],
+    });
+
+    const meeting = await db.Meeting.findOne({
+      where: { meetingId: req.params.meetingId },
+      include: [db.Subject],
+    });
+
+    await db.StudentMeeting.destroy({
+      where: { meetingId: req.params.meetingId },
+    });
+
     await db.Meeting.destroy({
       where: { meetingId: req.params.meetingId },
     });
+
+    await db.Examination.destroy({
+      where: { meetingId: req.params.meetingId },
+    });
+
+    students.Student.forEach((student) =>
+      new Meeting(meeting, student).sendCancelExam()
+    );
 
     res.status(204).send();
   } catch (error) {

@@ -8,18 +8,6 @@ module.exports = (sequelize, dataTypes) => {
         allowNull: false,
         autoIncrement: true,
       },
-      password: {
-        type: dataTypes.STRING(10),
-      },
-      startDate: {
-        type: dataTypes.DATE,
-      },
-      endDate: {
-        type: dataTypes.DATE,
-      },
-      startExam: {
-        type: dataTypes.BOOLEAN,
-      },
     },
     {
       tableName: "examinations",
@@ -30,9 +18,6 @@ module.exports = (sequelize, dataTypes) => {
   model.associate = (models) => {
     model.belongsTo(models.Meeting, {
       foreignKey: "meetingId",
-    });
-    model.belongsTo(models.Exam, {
-      foreignKey: "examId",
     });
   };
 

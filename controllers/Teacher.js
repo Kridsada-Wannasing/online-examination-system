@@ -113,6 +113,7 @@ const login = async (req, res, next) => {
         message: "เข้าสู่ระบบสำเร็จ",
         token,
         teacher: {
+          teacherId: target.teacherId,
           firstName: target.firstName,
           lastName: target.lastName,
           email: target.email,

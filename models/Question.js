@@ -17,12 +17,12 @@ module.exports = (sequelize, dataTypes) => {
       level: {
         type: dataTypes.INTEGER(1),
       },
-      // numberOfAnswer: {
-      //   type: dataTypes.INTEGER(2),
-      // },
-      // score: {
-      //   type: dataTypes.INTEGER(3),
-      // },
+      numberOfAnswer: {
+        type: dataTypes.INTEGER(2),
+      },
+      score: {
+        type: dataTypes.INTEGER(3),
+      },
     },
     {
       tableName: "questions",

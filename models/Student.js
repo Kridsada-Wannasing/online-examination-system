@@ -37,7 +37,8 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.ExamLog, {
       foreignKey: "studentId",
     });
-    model.hasMany(models.StudentMeeting, {
+    model.belongsToMany(models.Account, {
+      through: models.StudentMeeting,
       foreignKey: "studentId",
     });
   };
