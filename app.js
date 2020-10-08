@@ -12,8 +12,11 @@ const cors = require("cors");
 const path = require("path");
 const socketIo = require("socket.io");
 
+const adminRoutes = require("./routes/Admin");
+
 require("./config/passport/Student");
 require("./config/passport/Teacher");
+require("./config/passport/Admin");
 
 app.use(cors());
 
@@ -28,6 +31,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
+app.use("/admin", adminRoutes);
 
 const expressServer = app.listen(process.env.PORT, () => {
   console.log(`App running on port ${process.env.PORT}`);
