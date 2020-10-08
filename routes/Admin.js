@@ -17,8 +17,6 @@ router.get("/all-teacher", teacherControllers.getAllTeacher);
 router.get("/student/:studentId", studentControllers.getStudent);
 router.get("/teacher/:teacherId", teacherControllers.getTeacher);
 
-router.get("/me", auth, adminControllers.getMe);
-
 router.post("/student", studentControllers.registerMany);
 router.post("/teacher", teacherControllers.registerMany);
 
