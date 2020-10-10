@@ -2,7 +2,7 @@ const db = require("../models");
 
 const getExaminationDate = async (req, res, next) => {
   try {
-    const examination = await db.StudentMeeting.findAll({
+    const examination = await db.Meeting.findOne({
       attributes: [
         [
           db.Sequelize.fn("DISTINCT", db.Sequelize.col("meetingId")),

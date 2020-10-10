@@ -8,12 +8,18 @@ const getQuestionInExam = async (req, res, next) => {
       },
     });
 
+    if (questionInExam.length == 0) {
+      return res.status(200).json({
+        status: "success",
+        message: "ยังไม่มีคำถามในชุดข้อสอบนี้",
+      });
+    }
+
     const uniqueQuestionId = [
       ...new Set(questionInExam.map((item) => item.questionId)),
     ];
 
     let getQuestions;
-    let countAnswer;
 
     if (Object.keys(req.user.dataValues).includes("teacherId")) {
       getQuestions = await db.Question.findAll({
@@ -29,23 +35,11 @@ const getQuestionInExam = async (req, res, next) => {
         },
         include: [db.Choice, db.Image],
       });
-
-      countAnswer = await db.Answer.findAll({
-        attributes: [
-          [db.sequelize.fn("count", db.sequelize.col("answer")), "countAnswer"],
-          "questionId",
-        ],
-        where: {
-          questionId: uniqueQuestionId,
-        },
-        group: db.sequelize.col("questionId"),
-      });
     }
 
-    res.status(201).json({
+    res.status(200).json({
       status: "success",
       getQuestions,
-      countAnswer,
     });
   } catch (error) {
     res.status(400).json({
@@ -69,7 +63,14 @@ const searchQuestions = async (req, res, next) => {
       },
     });
 
-    const uniqueQuestionId = questionInExam.map((item) => item.questionId);
+    if (questionInExam.length == 0) {
+      return res.status(200).json({
+        status: "success",
+        message: "ยังไม่มีคำถามในชุดข้อสอบนี้",
+      });
+    }
+
+    const questionId = questionInExam.map((item) => item.questionId);
 
     let tags = {};
 
@@ -80,7 +81,7 @@ const searchQuestions = async (req, res, next) => {
 
     let getQuestions = await db.Question.findAll({
       where: {
-        questionId: uniqueQuestionId,
+        questionId: questionId,
         ...req.query,
       },
       include: [

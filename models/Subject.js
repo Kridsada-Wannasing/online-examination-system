@@ -3,7 +3,7 @@ module.exports = (sequelize, dataTypes) => {
     "Subject",
     {
       subjectId: {
-        type: dataTypes.INTEGER,
+        type: dataTypes.STRING(8),
         primaryKey: true,
         allowNull: false,
       },

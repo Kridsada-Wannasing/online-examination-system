@@ -6,7 +6,7 @@ const calculateScore = require("../controllers/CalculateScore");
 
 router.post("/", scoreControllers.createScore);
 router.get("/", scoreControllers.getAllScore);
-router.get("/:scoreId", scoreControllers.getScore);
+router.get("/student", scoreControllers.getScoresForStudent);
 router.patch("/:scoreId", scoreControllers.updateScore);
 router.delete("/:scoreId", scoreControllers.deleteScore);
 

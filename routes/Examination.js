@@ -3,13 +3,6 @@ const router = express.Router();
 
 const examinationControllers = require("../controllers/Examination");
 
-router.get("/invited", examinationControllers.getExaminationsForInvitedStudent);
-// router.get("/", examinationControllers.getAllExaminations);
-// router.get("/:examinationId", examinationControllers.getExamination);
-// router.post("/", examinationControllers.createExamination);
-router.post("/:examinationId", examinationControllers.enterToExamination);
-router.post("/invited", examinationControllers.addInvitedStudent);
-// router.patch("/:examinationId", examinationControllers.updateExamination);
-// router.delete("/:examinationId", examinationControllers.cancelExamination);
+router.post("/:meetingId", examinationControllers.enterToExamination);
 
 module.exports = router;

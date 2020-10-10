@@ -5,7 +5,6 @@ module.exports = (sequelize, dataTypes) => {
       studentId: {
         type: dataTypes.BIGINT,
         primaryKey: true,
-        allowNull: false,
       },
       firstName: {
         type: dataTypes.STRING(50),
@@ -37,7 +36,7 @@ module.exports = (sequelize, dataTypes) => {
     model.hasMany(models.ExamLog, {
       foreignKey: "studentId",
     });
-    model.belongsToMany(models.Account, {
+    model.belongsToMany(models.Meeting, {
       through: models.StudentMeeting,
       foreignKey: "studentId",
     });

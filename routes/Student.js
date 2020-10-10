@@ -10,6 +10,7 @@ const questionNestedRoutes = require("../routes/Question");
 const questionExamNestedRoutes = require("../routes/QuestionExam");
 const examNestedRoutes = require("../routes/Exam");
 const answerNestedRoutes = require("../routes/Answer");
+const meetingNestedRoutes = require("../routes/Meeting");
 const examinationNestedRoutes = require("../routes/Examination");
 const notificationNestedRoutes = require("../routes/Notification");
 
@@ -28,8 +29,9 @@ router.use("/score", scoreNestedRoutes);
 router.use("/question", questionNestedRoutes);
 router.use("/exam", examNestedRoutes);
 router.use("/answer", answerNestedRoutes);
-router.use("/examination", examinationNestedRoutes);
+router.use("/meeting", meetingNestedRoutes);
 router.use("/question-exam", questionExamNestedRoutes);
 router.use("/notification", notificationNestedRoutes);
+router.use("/examination", examinationNestedRoutes);
 
 module.exports = router;

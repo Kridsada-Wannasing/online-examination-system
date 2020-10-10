@@ -57,7 +57,7 @@ const login = async (req, res, next) => {
     });
   } else {
     // const isCorrectPassword = bcryptjs.compareSync(password, target.password);
-    const isCorrectPassword = password.localeCompare(target.password);
+    const isCorrectPassword = password == target.password;
 
     if (isCorrectPassword) {
       const payload = {
@@ -65,12 +65,17 @@ const login = async (req, res, next) => {
         adminId: target.adminId,
       };
       const token = jwt.sign(payload, process.env.SECRET_OR_KEY, {
-        expiresIn: 3600,
+        expiresIn: "7d",
       });
 
       res.status(200).json({
         message: "เข้าสู่ระบบสำเร็จ",
         token,
+        admin: {
+          firstName: target.firstName,
+          lastName: target.lastName,
+          email: target.email,
+        },
       });
     } else {
       res.status(400).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
@@ -103,8 +108,8 @@ const updateMe = (req, res, next) => {
 };
 
 module.exports = {
-  registerOne,
-  registerMany,
+  // registerOne,
+  // registerMany,
   login,
   getMe,
   updateMe,

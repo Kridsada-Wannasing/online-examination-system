@@ -41,8 +41,8 @@ const createStudentInMeeting = async (req, res, next) => {
 
 const getAllStudentInMeeting = async (req, res, next) => {
   try {
-    const allStudentInMeeting = await db.StudentMeeting.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+    const students = await db.Meeting.findOne({
+      attributes: ["meetingId"],
       where: {
         meetingId: req.params.meetingId,
       },
@@ -52,11 +52,9 @@ const getAllStudentInMeeting = async (req, res, next) => {
       },
     });
 
-    let students = allStudentInMeeting.map((student) => student.Student);
-
     res.status(200).json({
       status: "success",
-      students,
+      students: students.Students,
     });
   } catch (error) {
     console.log(error);
@@ -70,11 +68,15 @@ const getAllStudentInMeeting = async (req, res, next) => {
 const deleteStudentInMeeting = async (req, res, next) => {
   try {
     await db.StudentMeeting.destroy({
-      where: { meeting: req.params.meetingId, studentId: req.params.studentId },
+      where: {
+        meetingId: req.params.meetingId,
+        studentId: req.params.studentId,
+      },
     });
 
     res.status(204).send();
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

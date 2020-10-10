@@ -20,7 +20,7 @@ module.exports = (sequelize, dataTypes) => {
       numberOfAnswer: {
         type: dataTypes.INTEGER(2),
       },
-      score: {
+      sumScoreQuestion: {
         type: dataTypes.INTEGER(3),
       },
     },
@@ -44,6 +44,9 @@ module.exports = (sequelize, dataTypes) => {
       foreignKey: "questionId",
     });
     model.hasMany(models.QuestionTag, {
+      foreignKey: "questionId",
+    });
+    model.hasMany(models.ExamLog, {
       foreignKey: "questionId",
     });
   };

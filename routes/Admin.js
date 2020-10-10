@@ -11,11 +11,11 @@ const adminControllers = require("../controllers/Admin");
 router.post("/login", adminControllers.login);
 
 router.use(auth);
-router.get("/all-student", studentControllers.getAllStudent);
-router.get("/all-teacher", teacherControllers.getAllTeacher);
+router.get("/all-student", studentControllers.getAllStudents);
+router.get("/all-teacher", teacherControllers.getAllTeachers);
 
-router.get("/student/:studentId", studentControllers.getStudent);
-router.get("/teacher/:teacherId", teacherControllers.getTeacher);
+// router.get("/student/:studentId", studentControllers.get);
+// router.get("/teacher/:teacherId", teacherControllers.getTeacher);
 
 router.post("/student", studentControllers.registerMany);
 router.post("/teacher", teacherControllers.registerMany);

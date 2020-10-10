@@ -1,6 +1,12 @@
 const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
 const ejs = require("ejs");
+const dayjs = require("dayjs");
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+require("dayjs/locale/th");
+
+dayjs.extend(localizedFormat);
+dayjs.locale("th");
 
 module.exports = class Meeting {
   constructor(meeting, student) {
@@ -33,7 +39,11 @@ module.exports = class Meeting {
   async send(template, subject) {
     const html = await ejs.renderFile(`${__dirname}/../views/${template}.ejs`, {
       firstName: this.student.firstName,
-      meeting: this.meeting,
+      startExamDate: dayjs(new Date(this.meeting.startExamDate)).format("LLL"),
+      examType: this.meeting.examType,
+      term: this.meeting.term,
+      year: this.meeting.year,
+      subjectName: this.meeting.Subject.subjectName,
       subject,
     });
 
@@ -52,11 +62,11 @@ module.exports = class Meeting {
   }
 
   async sendScheduleAnExam() {
-    await this.send("ScheduleAnExam", "นัดหมายการสอบ");
+    await this.send("scheduleAnExam", "นัดหมายการสอบ");
   }
 
   async sendPostponeTheExam() {
-    await this.send("PostponeTheExam", "เลื่อนการสอบ");
+    await this.send("postponeTheExam", "เลื่อนการสอบ");
   }
 
   async sendCancelExam() {

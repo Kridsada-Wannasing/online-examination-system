@@ -4,13 +4,22 @@ const Meeting = require("../utils/Meeting");
 
 const createMeeting = async (req, res, next) => {
   try {
-    const newMeeting = await db.Meeting.create({
-      examDate: req.body.examDate,
+    const meeting = await db.Meeting.create({
+      startExamDate: req.body.startExamDate,
+      endExamDate: req.body.endExamDate,
       examType: req.body.examType,
       term: req.body.term,
       year: req.body.year,
+      password: req.body.password,
+      isPostpone: false,
       teacherId: req.user.teacherId,
       subjectId: req.body.subjectId,
+      examId: req.body.examId,
+    });
+
+    const newMeeting = await db.Meeting.findOne({
+      where: { meetingId: meeting.meetingId },
+      include: [db.Subject],
     });
 
     res.status(201).json({
@@ -31,7 +40,7 @@ const getAllMeeting = async (req, res, next) => {
     const allMeeting = await db.Meeting.findAll({
       where: { teacherId: req.user.teacherId, ...req.query },
       include: [db.Subject],
-      order: [["examDate", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
 
     res.status(200).json({
@@ -46,12 +55,69 @@ const getAllMeeting = async (req, res, next) => {
   }
 };
 
+const getAllMeetingInStudent = async (req, res, next) => {
+  try {
+    const meetings = await db.Student.findOne({
+      attributes: ["studentId"],
+      where: { studentId: req.user.studentId },
+      required: true,
+      include: {
+        attributes: {
+          exclude: [
+            "createdAt",
+            "updatedAt",
+            "subjectId",
+            "examId",
+            "teacherId",
+          ],
+        },
+        model: db.Meeting,
+        required: true,
+        include: [
+          {
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            model: db.Exam,
+            required: true,
+          },
+          {
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            model: db.Subject,
+            required: true,
+          },
+        ],
+      },
+    });
+
+    if (!meetings) {
+      return res.status(200).json({
+        message: "ไม่มีห้องสอบ",
+      });
+    }
+
+    const allMeeting = meetings.Meetings.map((meeting) => meeting);
+
+    res.status(200).json({
+      status: "success",
+      allMeeting,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const getMeeting = async (req, res, next) => {
   try {
+    console.log(req.params.meetingId);
     const target = await db.Meeting.findOne({
       where: { meetingId: req.params.meetingId },
       include: [db.Subject],
     });
+
+    console.log(target);
 
     res.status(200).json({
       status: "success",
@@ -67,28 +133,37 @@ const getMeeting = async (req, res, next) => {
 
 const updateMeeting = async (req, res, next) => {
   try {
-    const students = await db.StudentMeeting.findAll({
+    await db.Meeting.update(req.body, {
+      where: { meetingId: req.params.meetingId },
+    });
+
+    const students = await db.Meeting.findOne({
       attributes: ["meetingId"],
       where: {
         meetingId: req.params.meetingId,
       },
-      include: [db.Student],
+      include: {
+        model: db.Student,
+        attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+      },
     });
 
-    const updatedMeeting = await db.Meeting.update(req.body, {
+    const updatedMeeting = await db.Meeting.findOne({
       where: { meetingId: req.params.meetingId },
+      include: [db.Subject],
     });
 
-    students.Student.forEach((student) =>
+    students.Students.forEach((student) =>
       new Meeting(updatedMeeting, student).sendPostponeTheExam()
     );
 
     res.status(200).json({
-      status: "succes",
+      status: "success",
       message: "เปลี่ยนแปลงข้อมูลการนัดหมายนี้สำเร็จ",
       updatedMeeting,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -98,18 +173,25 @@ const updateMeeting = async (req, res, next) => {
 
 const deleteMeeting = async (req, res, next) => {
   try {
-    const students = await db.StudentMeeting.findAll({
+    const students = await db.Meeting.findOne({
       attributes: ["meetingId"],
       where: {
         meetingId: req.params.meetingId,
       },
-      include: [db.Student],
+      include: {
+        model: db.Student,
+        attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+      },
     });
 
     const meeting = await db.Meeting.findOne({
       where: { meetingId: req.params.meetingId },
       include: [db.Subject],
     });
+
+    students.Students.forEach((student) =>
+      new Meeting(meeting, student).sendCancelExam()
+    );
 
     await db.StudentMeeting.destroy({
       where: { meetingId: req.params.meetingId },
@@ -123,10 +205,6 @@ const deleteMeeting = async (req, res, next) => {
       where: { meetingId: req.params.meetingId },
     });
 
-    students.Student.forEach((student) =>
-      new Meeting(meeting, student).sendCancelExam()
-    );
-
     res.status(204).send();
   } catch (error) {
     res.status(400).json({
@@ -139,6 +217,7 @@ const deleteMeeting = async (req, res, next) => {
 module.exports = {
   createMeeting,
   getAllMeeting,
+  getAllMeetingInStudent,
   getMeeting,
   updateMeeting,
   deleteMeeting,

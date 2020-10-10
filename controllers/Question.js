@@ -99,6 +99,26 @@ const updateQuestion = async (req, res, next) => {
 
 const deleteQuestion = async (req, res, next) => {
   try {
+    await db.QuestionTag.destroy({
+      where: { questionId: req.params.questionId },
+    });
+
+    await db.QuestionExam.destroy({
+      where: { questionId: req.params.questionId },
+    });
+
+    await db.Choice.destroy({
+      where: { questionId: req.params.questionId },
+    });
+
+    await db.Image.destroy({
+      where: { questionId: req.params.questionId },
+    });
+
+    await db.Answer.destroy({
+      where: { questionId: req.params.questionId },
+    });
+
     await db.Question.destroy({
       where: { questionId: req.params.questionId },
     });

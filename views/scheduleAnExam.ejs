@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <span class="preheader">นัดหมายการสอบ</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+        <tr>
+            <td>&nbsp;</td>
+            <td class="container">
+                <div class="content">
+
+                    <!-- START CENTERED WHITE CONTAINER -->
+                    <table role="presentation" class="main">
+
+                        <!-- START MAIN CONTENT AREA -->
+                        <tr>
+                            <td class="wrapper">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <p>นัดหมายการสอบ <%= examType %></p>
+                                            <p>วิชา <%= subjectName %> </p>
+                                            <p>ประจำภาคเรียนที่ <%= term %>/<%= year %></p>
+                                            <p>ในวันที่ <%= startExamDate %></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <!-- END MAIN CONTENT AREA -->
+                    </table>
+                    <!-- END CENTERED WHITE CONTAINER -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

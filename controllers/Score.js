@@ -2,7 +2,9 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const createScore = async (req, res, next) => {
   try {
-    const sum = await db.Answer.sum(["score"]);
+    const { examId, subjectId, meetingId } = req.body;
+
+    const sum = await db.Question.sum(["sumScoreQuestion"]);
 
     const calculateScore = await db.ExamLog.findAll({
       attributes: ["questionId", "examId"],
@@ -29,9 +31,12 @@ const createScore = async (req, res, next) => {
       },
     });
 
+    await db.StudentMeeting.destroy({
+      where: { studentId: req.user.studentId, meetingId: meetingId },
+    });
+
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
-    const { examId, subjectId, meetingId } = req.body;
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
       score,
@@ -47,7 +52,6 @@ const createScore = async (req, res, next) => {
       newScore,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -107,6 +111,47 @@ const getAllScore = async (req, res, next) => {
   }
 };
 
+const getScoresForStudent = async (req, res, next) => {
+  try {
+    const allScore = await db.Score.findAll({
+      where: { studentId: req.user.studentId },
+      include: [
+        {
+          model: db.Subject,
+          required: true,
+        },
+        {
+          model: db.Meeting,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          required: true,
+        },
+      ],
+    });
+
+    const scores = allScore.map((element) => ({
+      student: element.Student,
+      subjectName: element.Subject.subjectName,
+      subjectId: element.Subject.subjectId,
+      examType: element.Meeting.examType,
+      term: element.Meeting.term,
+      year: element.Meeting.year,
+      sum: element.sum,
+      score: element.score,
+    }));
+
+    res.status(200).json({
+      status: "success",
+      scores,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
 const getScore = async (req, res, next) => {
   try {
     const target = await db.Score.findOne({
@@ -139,7 +184,7 @@ const updateScore = async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: "succes",
+      status: "success",
       message: "เปลี่ยนแปลงข้อมูลคะแนนนี้สำเร็จ",
     });
   } catch (error) {
@@ -168,6 +213,7 @@ const deleteScore = async (req, res, next) => {
 module.exports = {
   createScore,
   getAllScore,
+  getScoresForStudent,
   getScore,
   updateScore,
   deleteScore,

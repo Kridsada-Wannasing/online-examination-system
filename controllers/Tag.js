@@ -58,7 +58,7 @@ const updateTag = async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: "succes",
+      status: "success",
       message: "เปลี่ยนแปลงป้ายระบุนี้สำเร็จ",
     });
   } catch (error) {

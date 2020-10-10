@@ -57,7 +57,7 @@ const registerOne = async (req, res, next) => {
       department: newAccount.department,
     };
 
-    const url = `${req.protocol}://${req.get("host")}/student`;
+    const url = `${req.protocol}://${req.get("host")}`;
     new Email(student, url).sendWelcome();
 
     res.status(201).json({
@@ -108,7 +108,7 @@ const registerMany = async (req, res, next) => {
 
     const newAccount = await db.Student.bulkCreate(createStudents);
 
-    const url = `${req.protocol}://${req.get("host")}/student`;
+    const url = `${req.protocol}://${req.get("host")}`;
     newStudent.map((student) => new Email(student, url).sendWelcome());
 
     res.status(201).json({
@@ -222,31 +222,47 @@ const updatePassword = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
+  console.log(email);
   try {
     const target = await db.Student.findOne({
       where: { email: email },
     });
 
-    if (!target) throw "กรอกอีเมลผิดหรือไม่มีอีเมลนี้";
+    if (!target) throw "อีเมลไม่ถูกต้อง";
 
-    const randomPassword = generateRandomPassword();
-    const hashedPassword = hashedPassword(randomPassword);
+    const randomPassword = await generateRandomPassword();
+    const hashingPassword = await hashedPassword(randomPassword);
 
     await db.Student.update(
-      { password: hashedPassword },
+      { password: hashingPassword },
       {
-        where: { studentId: req.user.studentId },
+        where: { studentId: target.studentId },
       }
     );
 
-    const student = { ...req.user, password: randomPassword };
-    const url = `${req.protocol}://${req.get("host")}/student`;
-    await new Email(student, url).sendForgotPassword();
+    target.password = randomPassword;
+
+    const url = `${req.protocol}://${req.get("host")}`;
+    await new Email(target, url).sendForgotPassword();
 
     res.status(200).json({
       status: "success",
       message: "รหัสผ่านถูกส่งไปยังอีเมลแล้ว",
     });
+  } catch (error) {
+    res.status(404).send({
+      message: error,
+    });
+  }
+};
+
+const deleteStudent = async (req, res, next) => {
+  try {
+    await db.Student.destroy({
+      where: { studentId: req.params.studentId },
+    });
+
+    res.status(204).send();
   } catch (error) {
     res.status(404).json({
       status: "fail",
@@ -263,4 +279,5 @@ module.exports = {
   updateMe,
   updatePassword,
   forgotPassword,
+  deleteStudent,
 };

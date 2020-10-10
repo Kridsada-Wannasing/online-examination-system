@@ -34,6 +34,8 @@ router.post("/student/register", studentControllers.registerMany);
 router.patch("/me", teacherControllers.updateMe);
 router.patch("/password", teacherControllers.updatePassword);
 
+router.delete("/student/:studentId", studentControllers.deleteStudent);
+
 router.use("/exam", examNestedRoutes);
 router.use("/question", questionNestedRoutes);
 router.use("/choice", choiceNestedRoutes);

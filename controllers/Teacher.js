@@ -52,7 +52,7 @@ const registerOne = async (req, res, next) => {
     department: newAccount.department,
   };
 
-  const url = `${req.protocol}://${req.get("host")}/teacher`;
+  const url = `${req.protocol}://${req.get("host")}`;
   await new Email(teacher, url).sendWelcome();
 
   res.status(201).json({
@@ -63,7 +63,9 @@ const registerOne = async (req, res, next) => {
 };
 
 const registerMany = async (req, res, next) => {
-  const allTeacher = await db.Teacher.findAll();
+  const allTeacher = await db.Teacher.findAll({
+    attributes: ["email"],
+  });
   let target = differenceBy(req.body, allTeacher, "email");
 
   let newTeacher = [];
@@ -76,7 +78,7 @@ const registerMany = async (req, res, next) => {
 
   const newAccount = await db.Teacher.bulkCreate(target);
 
-  const url = `${req.protocol}://${req.get("host")}/teacher`;
+  const url = `${req.protocol}://${req.get("host")}`;
   newTeacher.map(
     async (teacher) => await new Email(teacher, url).sendWelcome()
   );
@@ -169,11 +171,12 @@ const updatePassword = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "เปลี่ยนแปลงรหัสผ่านสำเร็จ",
+      candidateNewPassword,
     });
   } catch (error) {
     res.status(400).json({
       status: "fail",
-      error,
+      message: error,
     });
   }
 };
@@ -185,28 +188,48 @@ const forgotPassword = async (req, res, next) => {
       where: { email: email },
     });
 
-    if (!target) throw false;
+    console.log(target);
 
-    const randomPassword = generateRandomPassword();
-    const hashedPassword = hashedPassword(randomPassword);
+    if (!target) throw "อีเมลไม่ถูกต้อง";
+
+    const randomPassword = await generateRandomPassword();
+    const hashingPassword = await hashedPassword(randomPassword);
 
     await db.Teacher.update(
-      { password: hashedPassword },
+      { password: hashingPassword },
       {
-        where: { teacherId: req.user.teacherId },
+        where: { teacherId: target.teacherId },
       }
     );
 
-    const teacher = { ...req.user, password: randomPassword };
-    const url = `${req.protocol}://${req.get("host")}/teacher`;
-    await new Email(teacher, url).sendForgotPassword();
+    target.password = randomPassword;
+
+    const url = `${req.protocol}://${req.get("host")}`;
+    await new Email(target, url).sendForgotPassword();
 
     res.status(200).json({
       status: "success",
       message: "รหัสผ่านถูกส่งไปยังอีเมลแล้ว",
     });
   } catch (error) {
-    if (!error) res.status(404).send("อีเมลไม่ถูกต้อง");
+    res.status(404).send({
+      message: error,
+    });
+  }
+};
+
+const deleteTeacher = async (req, res, next) => {
+  try {
+    await db.Teacher.destroy({
+      where: { teacherId: req.params.teacherId },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      error,
+    });
   }
 };
 
@@ -218,4 +241,5 @@ module.exports = {
   updateMe,
   updatePassword,
   forgotPassword,
+  deleteTeacher,
 };

@@ -62,7 +62,7 @@ const updateSubject = async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: "succes",
+      status: "success",
       message: "เปลี่ยนแปลงข้อมูลรายวิชานี้สำเร็จ",
       updatedSubject,
     });
