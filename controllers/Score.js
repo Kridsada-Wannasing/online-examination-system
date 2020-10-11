@@ -4,7 +4,22 @@ const createScore = async (req, res, next) => {
   try {
     const { examId, subjectId, meetingId } = req.body;
 
-    const sum = await db.Question.sum(["sumScoreQuestion"]);
+    const sum = await db.QuestionExam.findAll({
+      attributes: ["questionId"],
+      where: {
+        examId: examId,
+      },
+      include: {
+        model: db.Question,
+        required: true,
+        attributes: [
+          [
+            db.sequelize.fn("SUM", db.sequelize.col("sumScoreQuestion")),
+            "sumScore",
+          ],
+        ],
+      },
+    });
 
     const calculateScore = await db.ExamLog.findAll({
       attributes: ["questionId", "examId"],
@@ -37,10 +52,12 @@ const createScore = async (req, res, next) => {
 
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
+    const sumScore = Number(sum[0].Question.dataValues.sumScore);
+
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
       score,
-      sum,
+      sum: sumScore,
       examId,
       meetingId,
       subjectId,
@@ -66,34 +83,41 @@ const getAllScore = async (req, res, next) => {
       user.studentId = req.user.studentId;
 
     const allScore = await db.Score.findAll({
-      where: { ...user, examId: req.query.examId },
+      where: { ...user, ...req.query },
       include: [
         {
           model: db.Exam,
-          required: true,
-          include: {
-            model: db.Subject,
-            where: {
-              subjectId: req.query.subjectId,
-            },
-            required: true,
+          attributes: {
+            exclude: ["term", "year", "examType", "createdAt", "updatedAt"],
           },
+          required: true,
         },
         {
           model: db.Student,
           attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+          required: true,
+        },
+        {
+          model: db.Subject,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          required: true,
+        },
+        {
+          model: db.Meeting,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          required: true,
         },
       ],
     });
 
     const scores = allScore.map((element) => ({
       student: element.Student,
-      subject: element.Exam.Subject.subjectName,
-      subjectId: element.Exam.Subject.subjectId,
+      subject: element.Subject.subjectName,
+      subjectId: element.Subject.subjectId,
       exam: element.Exam.examName,
-      examType: element.Exam.examType,
-      term: element.Exam.term,
-      year: element.Exam.year,
+      examType: element.Meeting.examType,
+      term: element.Meeting.term,
+      year: element.Meeting.year,
       sum: element.sum,
       score: element.score,
     }));
