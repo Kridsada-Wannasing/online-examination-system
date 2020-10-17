@@ -19,18 +19,24 @@ const createExamLog = async (req, res, next) => {
   });
 };
 
-const getAllExamLog = async (req, res, next) => {
-  const allExamLog = await db.ExamLog.findAll({
+const getExamLogOfQuestion = async (req, res, next) => {
+  const examLog = await db.ExamLog.findAll({
     where: {
       examId: req.params.examId,
-      //passport ของ student เก็บใน req.user.studentId
-      studentId: req.user.studentId,
+      studentId: req.params.studentId,
+    },
+    include: {
+      model: db.Question,
+      where: {
+        questionType: "อัตนัย",
+      },
+      include: [db.Answer],
     },
   });
 
   res.status(200).json({
     status: "success",
-    allExamLog,
+    examLog,
   });
 };
 
@@ -78,8 +84,9 @@ const deleteExamLog = async (req, res, next) => {
 
 module.exports = {
   createExamLog,
-  getAllExamLog,
+  // getAllExamLog,
   getExamLog,
+  getExamLogOfQuestion,
   updateExamLog,
   deleteExamLog,
 };

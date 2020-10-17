@@ -15,6 +15,7 @@ const questionExamNestedRoutes = require("./QuestionExam");
 const tagNestedRoutes = require("./Tag");
 const meetingNestedRoutes = require("./Meeting");
 // const examinationNestedRoutes = require("./Examination");
+const examLogNestedRoutes = require("../routes/ExamLog");
 const imageNestedRoutes = require("./Image");
 const registrationNestedRoutes = require("../routes/Registration");
 const scoreNestedRoutes = require("../routes/Score");
@@ -50,5 +51,6 @@ router.use("/image", imageNestedRoutes);
 router.use("/registration", registrationNestedRoutes);
 router.use("/score", scoreNestedRoutes);
 router.use("/student-meeting", studentMeetingNestedRoutes);
+router.use("/exam-log", examLogNestedRoutes);
 
 module.exports = router;

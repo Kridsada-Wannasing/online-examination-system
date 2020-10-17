@@ -17,6 +17,10 @@ const createScore = async (req, res, next) => {
             db.sequelize.fn("SUM", db.sequelize.col("sumScoreQuestion")),
             "sumScore",
           ],
+          [
+            db.sequelize.fn("COUNT", db.sequelize.col("numberOfQuestion")),
+            "countQuestion",
+          ],
         ],
       },
     });
@@ -53,6 +57,7 @@ const createScore = async (req, res, next) => {
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
     const sumScore = Number(sum[0].Question.dataValues.sumScore);
+    const countQuestion = Number(sum[0].Question.dataValues.countQuestion);
 
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
@@ -67,6 +72,7 @@ const createScore = async (req, res, next) => {
       status: "success",
       message: "สร้างคะแนนสำเร็จ",
       newScore,
+      countQuestion,
     });
   } catch (error) {
     res.status(400).json({
