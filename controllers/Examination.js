@@ -58,7 +58,7 @@ const db = require("../models");
 //       examinationsForInvitedStudent,
 //     });
 //   } catch (error) {
-//     console.log(error);
+//
 //     res.status(400).json({
 //       status: "fail",
 //       error,
@@ -81,17 +81,20 @@ const enterToExamination = async (req, res, next) => {
     if (!passwordIsCorrect) throw "รหัสผ่านผิด";
 
     let currentDate = new Date().getTime();
-    let startDate = new Date(getExamination.startDate).getTime();
-    let endDate = new Date(getExamination.endDate).getTime();
+    let startDate = new Date(getExamination.startExamDate).getTime();
+    let endDate = new Date(getExamination.endExamDate).getTime();
 
     if (currentDate < startDate) {
-      console.log("ยัง");
       throw "ขณะนี้ยังไม่ถึงเวลาสอบ";
     } else if (currentDate > endDate) {
-      console.log("แล้ว");
+      // await db.StudentMeeting.destroy({
+      //   where: {
+      //     studentId: req.user.studentId,
+      //     meetingId: req.params.meetingId,
+      //   },
+      // });
       throw "ขณะนี้หมดเวลาสอบแล้ว";
     } else {
-      console.log("เข้า");
       res.status(200).json({
         status: "success",
         examId: getExamination.examId,

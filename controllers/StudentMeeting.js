@@ -57,7 +57,6 @@ const getAllStudentInMeeting = async (req, res, next) => {
       students: students.Students,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -76,7 +75,6 @@ const deleteStudentInMeeting = async (req, res, next) => {
 
     res.status(204).send();
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

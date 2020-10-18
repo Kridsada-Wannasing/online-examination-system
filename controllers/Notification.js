@@ -31,7 +31,6 @@ const getExaminationDate = async (req, res, next) => {
       examinationDate,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -70,7 +69,6 @@ const getPostponeExaminationDate = async (req, res, next) => {
       postponeExaminationDate,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -94,7 +92,6 @@ const getScoreNotification = async (req, res, next) => {
       scoreNotification,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

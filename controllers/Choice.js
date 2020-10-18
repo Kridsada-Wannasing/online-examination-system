@@ -83,7 +83,6 @@ const updateChoice = async (req, res, next) => {
       question,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

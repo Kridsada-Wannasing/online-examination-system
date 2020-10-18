@@ -57,7 +57,6 @@ const getAnswersInQuestion = async (req, res, next) => {
       answersInQuestion,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

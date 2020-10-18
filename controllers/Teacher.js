@@ -188,8 +188,6 @@ const forgotPassword = async (req, res, next) => {
       where: { email: email },
     });
 
-    console.log(target);
-
     if (!target) throw "อีเมลไม่ถูกต้อง";
 
     const randomPassword = await generateRandomPassword();

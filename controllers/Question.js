@@ -29,7 +29,6 @@ const createQuestion = async (req, res, next) => {
 const getAllQuestion = async (req, res, next) => {
   //ส่ง query string มาเพื่อ get ข้อมูลออกไปตาม field ที่กำหนด
   const queryString = req.query;
-  console.log(queryString);
   try {
     const allQuestion = await db.Question.findAll({ where: queryString });
 

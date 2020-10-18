@@ -44,7 +44,7 @@ const duplicateExam = async (req, res, next) => {
       term: exam.term,
       year: exam.year,
       format: exam.format,
-      authority: exam.authority,
+      authority: false,
       subjectId: exam.subjectId,
       examName: `${exam.examName}(คัดลอก)`,
       teacherId: req.user.teacherId,
@@ -137,6 +137,10 @@ const updateExam = async (req, res, next) => {
 const deleteExam = async (req, res, next) => {
   try {
     await db.Exam.destroy({
+      where: { examId: req.params.examId },
+    });
+
+    await db.QuestionExam.destroy({
       where: { examId: req.params.examId },
     });
 

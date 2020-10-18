@@ -86,8 +86,6 @@ const registerMany = async (req, res, next) => {
       where: { studentId: studentId },
     });
 
-    console.log(allStudent);
-
     let target = differenceBy(req.body, allStudent, "studentId");
 
     if (target === undefined || target.length == 0) {
@@ -222,7 +220,6 @@ const updatePassword = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
-  console.log(email);
   try {
     const target = await db.Student.findOne({
       where: { email: email },

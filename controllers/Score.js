@@ -133,7 +133,6 @@ const getAllScore = async (req, res, next) => {
       scores,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -174,7 +173,6 @@ const getScoresForStudent = async (req, res, next) => {
       scores,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

@@ -101,7 +101,6 @@ const getAllMeetingInStudent = async (req, res, next) => {
       allMeeting,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -111,13 +110,10 @@ const getAllMeetingInStudent = async (req, res, next) => {
 
 const getMeeting = async (req, res, next) => {
   try {
-    console.log(req.params.meetingId);
     const target = await db.Meeting.findOne({
       where: { meetingId: req.params.meetingId },
       include: [db.Subject],
     });
-
-    console.log(target);
 
     res.status(200).json({
       status: "success",
@@ -163,7 +159,6 @@ const updateMeeting = async (req, res, next) => {
       updatedMeeting,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
