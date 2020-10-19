@@ -18,8 +18,8 @@ const createScore = async (req, res, next) => {
             "sumScore",
           ],
           [
-            db.sequelize.fn("COUNT", db.sequelize.col("numberOfQuestion")),
-            "countQuestion",
+            db.sequelize.fn("COUNT", db.sequelize.col("numberOfAnswer")),
+            "countAnswer",
           ],
         ],
       },
