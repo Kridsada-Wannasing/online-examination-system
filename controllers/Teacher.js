@@ -97,7 +97,7 @@ const login = async (req, res, next) => {
   if (!target) {
     res.status(400).json({
       status: "fail",
-      message: "เข้าสู่ระบบล้มเหลว",
+      message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
     });
   } else {
     const isCorrectPassword = bcryptjs.compareSync(password, target.password);
