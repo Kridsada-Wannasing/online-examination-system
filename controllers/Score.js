@@ -75,6 +75,7 @@ const createScore = async (req, res, next) => {
       countQuestion,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
