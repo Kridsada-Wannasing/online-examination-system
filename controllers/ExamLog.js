@@ -20,23 +20,50 @@ const createExamLog = async (req, res, next) => {
 };
 
 const getExamLogOfQuestion = async (req, res, next) => {
-  const examLog = await db.ExamLog.findAll({
+  const questions = await db.QuestionExam.findAll({
+    attributes: ["questionId"],
     where: {
       examId: req.params.examId,
-      studentId: req.params.studentId,
     },
+  });
+
+  const searchByQuestions = questions.map(
+    (question) => question.dataValues.questionId
+  );
+
+  const examLogs = await db.ExamLog.findAll({
+    attributes: ["answer", "examLogId"],
+    where: {
+      studentId: req.params.studentId,
+      questionId: searchByQuestions,
+      isChecking: false,
+    },
+    required: true,
     include: {
+      attributes: ["question", "sumScoreQuestion"],
       model: db.Question,
       where: {
         questionType: "อัตนัย",
       },
-      include: [db.Answer],
+      required: true,
+      include: {
+        model: db.Answer,
+        attributes: ["answer"],
+        required: true,
+      },
     },
   });
 
+  const mapOfExamLogs = examLogs.map((examLog) => ({
+    examLogId: examLog.examLogId,
+    yourAnswer: examLog.answer,
+    question: examLog.Question,
+    correctAnswer: examLog.Question.Answers.map((answer) => answer.answer),
+  }));
+
   res.status(200).json({
     status: "success",
-    examLog,
+    examLogs: mapOfExamLogs,
   });
 };
 

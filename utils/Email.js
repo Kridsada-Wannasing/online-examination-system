@@ -57,7 +57,7 @@ module.exports = class Email {
   }
 
   async sendForgotPassword() {
-    await this.send("forgotPassword", "้ตั้งค่ารหัสผ่านใหม่");
+    await this.send("forgotPassword", "ตั้งค่ารหัสผ่านใหม่");
   }
 
   async sendUpdatePassword() {

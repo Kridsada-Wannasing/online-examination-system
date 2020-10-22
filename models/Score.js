@@ -14,6 +14,15 @@ module.exports = (sequelize, dataTypes) => {
       sum: {
         type: dataTypes.INTEGER(3),
       },
+      isCompleted: {
+        type: dataTypes.BOOLEAN,
+      },
+      countAllQuestion: {
+        type: dataTypes.INTEGER,
+      },
+      countQuestion: {
+        type: dataTypes.INTEGER,
+      },
     },
     {
       tableName: "scores",

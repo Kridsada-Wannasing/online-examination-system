@@ -11,6 +11,10 @@ module.exports = (sequelize, dataTypes) => {
       answer: {
         type: dataTypes.STRING,
       },
+      isChecking: {
+        type: dataTypes.BOOLEAN,
+        defaultValue: true,
+      },
     },
     {
       tableName: "exam_logs",

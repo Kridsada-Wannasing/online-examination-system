@@ -2,10 +2,12 @@ const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
 const ejs = require("ejs");
 
-module.exports = class Meeting {
-  constructor(score, student) {
+module.exports = class Score {
+  constructor(score, student, meeting, subjectName) {
     this.score = score;
     this.student = student;
+    this.meeting = meeting;
+    this.subjectName = subjectName;
     this.from = `Kridsada Wannasing <${process.env.EMAIL_FROM}>`;
     this.to = student.email;
   }
@@ -33,7 +35,12 @@ module.exports = class Meeting {
   async send(template, subject) {
     const html = await ejs.renderFile(`${__dirname}/../views/${template}.ejs`, {
       firstName: this.student.firstName,
-      score: this.score,
+      score: this.score.score,
+      sum: this.score.sum,
+      subjectName: this.subjectName,
+      examType: this.meeting.examType,
+      term: this.meeting.term,
+      year: this.meeting.year,
       subject,
     });
 

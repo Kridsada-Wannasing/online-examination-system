@@ -7,7 +7,7 @@ const calculateScore = require("../controllers/CalculateScore");
 router.post("/", scoreControllers.createScore);
 router.get("/", scoreControllers.getAllScore);
 router.get("/student", scoreControllers.getScoresForStudent);
-router.patch("/:scoreId", scoreControllers.updateScore);
+router.patch("/:examLogId/:scoreId", scoreControllers.updateScore);
 router.delete("/:scoreId", scoreControllers.deleteScore);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const Score = require("../utils/Score");
 const createScore = async (req, res, next) => {
   try {
     const { examId, subjectId, meetingId } = req.body;
@@ -18,8 +19,28 @@ const createScore = async (req, res, next) => {
             "sumScore",
           ],
           [
-            db.sequelize.fn("COUNT", db.sequelize.col("numberOfAnswer")),
-            "countAnswer",
+            db.sequelize.fn("COUNT", db.sequelize.col("question")),
+            "countAllQuestion",
+          ],
+        ],
+      },
+    });
+
+    const countObjective = await db.QuestionExam.findAll({
+      attributes: ["questionId"],
+      where: {
+        examId: examId,
+      },
+      include: {
+        model: db.Question,
+        required: true,
+        where: {
+          questionType: "ปรนัย",
+        },
+        attributes: [
+          [
+            db.sequelize.fn("COUNT", db.sequelize.col("question")),
+            "countQuestion",
           ],
         ],
       },
@@ -34,6 +55,9 @@ const createScore = async (req, res, next) => {
       include: {
         model: db.Question,
         required: true,
+        where: {
+          questionType: "ปรนัย",
+        },
         attributes: ["questionId"],
         include: {
           model: db.Answer,
@@ -57,7 +81,14 @@ const createScore = async (req, res, next) => {
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
     const sumScore = Number(sum[0].Question.dataValues.sumScore);
-    const countQuestion = Number(sum[0].Question.dataValues.countQuestion);
+    const countQuestion = Number(
+      countObjective[0].Question.dataValues.countQuestion
+    );
+    const countAllQuestion = Number(
+      sum[0].Question.dataValues.countAllQuestion
+    );
+
+    const isCompleted = countAllQuestion == countQuestion;
 
     const newScore = await db.Score.create({
       studentId: req.user.studentId,
@@ -66,16 +97,17 @@ const createScore = async (req, res, next) => {
       examId,
       meetingId,
       subjectId,
+      isCompleted,
+      countAllQuestion,
+      countQuestion,
     });
 
     res.status(201).json({
       status: "success",
       message: "สร้างคะแนนสำเร็จ",
       newScore,
-      countQuestion,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
@@ -122,11 +154,14 @@ const getAllScore = async (req, res, next) => {
       subject: element.Subject.subjectName,
       subjectId: element.Subject.subjectId,
       exam: element.Exam.examName,
+      examId: element.Exam.examId,
       examType: element.Meeting.examType,
       term: element.Meeting.term,
       year: element.Meeting.year,
       sum: element.sum,
       score: element.score,
+      scoreId: element.scoreId,
+      isCompleted: element.isCompleted,
     }));
 
     res.status(200).json({
@@ -167,6 +202,7 @@ const getScoresForStudent = async (req, res, next) => {
       year: element.Meeting.year,
       sum: element.sum,
       score: element.score,
+      isCompleted: element.isCompleted,
     }));
 
     res.status(200).json({
@@ -208,15 +244,100 @@ const getScore = async (req, res, next) => {
 
 const updateScore = async (req, res, next) => {
   try {
-    await db.Score.update(req.body, {
-      where: { scoreId: req.params.scoreId },
+    await db.ExamLog.update(
+      {
+        isChecking: true,
+      },
+      {
+        where: {
+          examLogId: req.params.examLogId,
+        },
+      }
+    );
+
+    console.log(req.body);
+
+    const score = await db.Score.findOne({
+      attributes: ["countAllQuestion", "countQuestion"],
+      where: {
+        scoreId: req.params.scoreId,
+      },
     });
 
-    res.status(200).json({
-      status: "success",
-      message: "เปลี่ยนแปลงข้อมูลคะแนนนี้สำเร็จ",
-    });
+    if (score.countAllQuestion == score.countQuestion + 1) {
+      await db.Score.update(
+        {
+          ...req.body,
+          isCompleted: true,
+          countQuestion: score.countAllQuestion,
+        },
+        {
+          where: { scoreId: req.params.scoreId },
+        }
+      );
+
+      const sendScore = await db.Score.findOne({
+        attributes: ["sum", "score", "isCompleted"],
+        where: {
+          scoreId: req.params.scoreId,
+        },
+        include: [
+          {
+            model: db.Student,
+            attributes: ["studentId", "firstName", "lastName", "email"],
+            required: true,
+          },
+          {
+            model: db.Subject,
+            attributes: ["subjectName"],
+            required: true,
+          },
+          {
+            model: db.Meeting,
+            attributes: ["examType", "term", "year"],
+            required: true,
+          },
+        ],
+      });
+
+      await new Score(
+        sendScore,
+        sendScore.Student,
+        sendScore.Meeting,
+        sendScore.Subject.subjectName
+      ).sendScore();
+
+      return res.status(200).json({
+        status: "success",
+        message: "เปลี่ยนแปลงข้อมูลคะแนนนี้สำเร็จ",
+        score: sendScore,
+      });
+    } else {
+      await db.Score.update(
+        {
+          ...req.body,
+          countQuestion: score.countQuestion + 1,
+        },
+        {
+          where: { scoreId: req.params.scoreId },
+        }
+      );
+
+      const currentScore = await db.Score.findOne({
+        attributes: ["score", "isCompleted"],
+        where: {
+          scoreId: req.params.scoreId,
+        },
+      });
+
+      return res.status(200).json({
+        status: "success",
+        message: "เปลี่ยนแปลงข้อมูลคะแนนนี้สำเร็จ",
+        score: currentScore,
+      });
+    }
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,
