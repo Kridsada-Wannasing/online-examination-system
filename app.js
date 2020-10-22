@@ -47,4 +47,4 @@ io.on("connection", (socket) => {
   });
 });
 
-db.sequelize.sync().then(() => expressServer);
+db.sequelize.sync({ force: true }).then(() => expressServer);
