@@ -20,22 +20,23 @@ const createExamLog = async (req, res, next) => {
 };
 
 const getExamLogOfQuestion = async (req, res, next) => {
-  const questions = await db.QuestionExam.findAll({
-    attributes: ["questionId"],
-    where: {
-      examId: req.params.examId,
-    },
-  });
+  // const questions = await db.QuestionExam.findAll({
+  //   attributes: ["questionId"],
+  //   where: {
+  //     examId: req.params.examId,
+  //   },
+  // });
 
-  const searchByQuestions = questions.map(
-    (question) => question.dataValues.questionId
-  );
+  // const searchByQuestions = questions.map(
+  //   (question) => question.dataValues.questionId
+  // );
 
   const examLogs = await db.ExamLog.findAll({
     attributes: ["answer", "examLogId"],
     where: {
+      examId: req.params.examId,
       studentId: req.params.studentId,
-      questionId: searchByQuestions,
+      // questionId: searchByQuestions,
       isChecking: false,
     },
     required: true,
