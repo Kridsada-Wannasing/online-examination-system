@@ -89,8 +89,10 @@ const registerMany = async (req, res, next) => {
     let target = differenceBy(req.body, allStudent, "studentId");
 
     if (target === undefined || target.length == 0) {
-      throw new Error({
+      return res.status(200).json({
+        status: "success",
         message: "มีบัญชีทั้งหมดนี้อยู่แล้ว",
+        allStudent,
       });
     }
 
@@ -115,7 +117,7 @@ const registerMany = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       status: "fail",
-      ...error,
+      error,
     });
   }
 };
