@@ -46,6 +46,8 @@ const createScore = async (req, res, next) => {
       },
     });
 
+    console.log(countObjective.length);
+
     if (!countObjective.length) {
       return res.status(201).json({
         status: "success",
