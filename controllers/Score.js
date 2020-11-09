@@ -46,6 +46,13 @@ const createScore = async (req, res, next) => {
       },
     });
 
+    if (!countObjective.length) {
+      return res.status(201).json({
+        status: "success",
+        message: "ส่งข้อสอบอัตนัยสำเร็จ",
+      });
+    }
+
     const calculateScore = await db.ExamLog.findAll({
       attributes: ["questionId", "examId"],
       where: {
