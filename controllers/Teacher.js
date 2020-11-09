@@ -63,31 +63,40 @@ const registerOne = async (req, res, next) => {
 };
 
 const registerMany = async (req, res, next) => {
-  const allTeacher = await db.Teacher.findAll({
-    attributes: ["email"],
-  });
-  let target = differenceBy(req.body, allTeacher, "email");
+  try {
+    const allTeacher = await db.Teacher.findAll({
+      attributes: ["email"],
+    });
+    let target = differenceBy(req.body, allTeacher, "email");
 
-  let newTeacher = [];
+    if (target === undefined || target.length == 0) {
+      return res.status(200).json({
+        status: "success",
+        message: "มีบัญชีทั้งหมดนี้อยู่แล้ว",
+      });
+    }
 
-  target = target.map((obj) => {
-    const randomPassword = generateRandomPassword();
-    newTeacher.push({ ...obj, password: randomPassword });
-    return { ...obj, password: hashedPassword(randomPassword) };
-  });
+    let newTeacher = [];
 
-  const newAccount = await db.Teacher.bulkCreate(target);
+    target = target.map((obj) => {
+      const randomPassword = generateRandomPassword();
+      newTeacher.push({ ...obj, password: randomPassword });
+      return { ...obj, password: hashedPassword(randomPassword) };
+    });
 
-  const url = `${req.protocol}://${req.get("host")}`;
-  newTeacher.map(
-    async (teacher) => await new Email(teacher, url).sendWelcome()
-  );
+    const newAccount = await db.Teacher.bulkCreate(target);
 
-  res.status(201).json({
-    status: "success",
-    message: "บัญชีนี้ถูกสร้างเรียบร้อย",
-    newAccount,
-  });
+    const url = `${req.protocol}://${req.get("host")}`;
+    newTeacher.map(
+      async (teacher) => await new Email(teacher, url).sendWelcome()
+    );
+
+    res.status(201).json({
+      status: "success",
+      message: "บัญชีนี้ถูกสร้างเรียบร้อย",
+      newAccount,
+    });
+  } catch (error) {}
 };
 
 const login = async (req, res, next) => {
