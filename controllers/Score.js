@@ -46,14 +46,7 @@ const createScore = async (req, res, next) => {
       },
     });
 
-    console.log(countObjective.length);
-    console.log(countObjective[0]);
-    console.log(countObjective[0].dataValues);
-    console.log(countObjective[0].questionId);
-    console.log(countObjective[0].QuestionExam.dataValues);
-    console.log(countObjective[0].QuestionExam.questionId);
-
-    if (!countObjective.length) {
+    if (!countObjective[0].questionId) {
       return res.status(201).json({
         status: "success",
         message: "ส่งข้อสอบอัตนัยสำเร็จ",
