@@ -47,7 +47,8 @@ const createScore = async (req, res, next) => {
     });
 
     console.log(countObjective.length);
-    console.log(countObjective);
+    console.log(countObjective.QuestionExam.dataValues);
+    console.log(countObjective.QuestionExam.questionId);
 
     if (!countObjective.length) {
       return res.status(201).json({
