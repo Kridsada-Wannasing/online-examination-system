@@ -54,7 +54,7 @@ const createScore = async (req, res, next) => {
     if (!countObjective[0].questionId) {
       const newScore = await db.Score.create({
         studentId: req.user.studentId,
-        score,
+        score: 0,
         sum: sumScore,
         examId,
         meetingId,
