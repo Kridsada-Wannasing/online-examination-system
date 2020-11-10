@@ -46,10 +46,28 @@ const createScore = async (req, res, next) => {
       },
     });
 
+    const sumScore = Number(sum[0].Question.dataValues.sumScore);
+    const countAllQuestion = Number(
+      sum[0].Question.dataValues.countAllQuestion
+    );
+
     if (!countObjective[0].questionId) {
+      const newScore = await db.Score.create({
+        studentId: req.user.studentId,
+        score,
+        sum: sumScore,
+        examId,
+        meetingId,
+        subjectId,
+        isCompleted: false,
+        countAllQuestion,
+        countQuestion: 0,
+      });
+
       return res.status(201).json({
         status: "success",
         message: "ส่งข้อสอบอัตนัยสำเร็จ",
+        newScore,
       });
     }
 
@@ -87,12 +105,8 @@ const createScore = async (req, res, next) => {
 
     const score = Number(calculateScore[0].Question.Answers[0].score);
 
-    const sumScore = Number(sum[0].Question.dataValues.sumScore);
     const countQuestion = Number(
       countObjective[0].Question.dataValues.countQuestion
-    );
-    const countAllQuestion = Number(
-      sum[0].Question.dataValues.countAllQuestion
     );
 
     const isCompleted = countAllQuestion == countQuestion;
